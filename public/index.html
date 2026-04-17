@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#d9a5a0" />
+  <title>Ristiäiset &amp; Lasten juhlat · 24.7.2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <section id="login-view" class="view">
+    <div class="login-card">
+      <div class="ornament" aria-hidden="true">
+        <svg viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 10 L48 10" stroke="currentColor" stroke-width="0.8" fill="none"/>
+          <circle cx="60" cy="10" r="3" fill="currentColor"/>
+          <path d="M72 10 L120 10" stroke="currentColor" stroke-width="0.8" fill="none"/>
+        </svg>
+      </div>
+      <p class="eyebrow">Tervetuloa</p>
+      <h1 class="display">Ristiäiset<br/><span class="amp">&amp;</span> Lasten juhlat</h1>
+      <p class="date-line">Perjantaina 24. heinäkuuta 2026</p>
+
+      <form id="login-form" class="login-form" autocomplete="off">
+        <label>
+          <span>Kuka olet?</span>
+          <select id="login-name" required>
+            <option value="" disabled selected>— Valitse nimesi —</option>
+          </select>
+        </label>
+        <label>
+          <span>Salasana</span>
+          <input id="login-password" type="password" inputmode="text" autocomplete="off" required />
+        </label>
+        <button type="submit" class="btn-primary">Astu sisään</button>
+        <p id="login-error" class="error-line" role="alert"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN APP -->
+  <main id="app-view" class="view hidden">
+    <header class="hero">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="eyebrow light">24. heinäkuuta 2026</p>
+        <h1 class="display light" id="hero-greeting">Tervetuloa juhliin!</h1>
+        <p class="hero-sub">Pienen tyttömme ristiäiset &amp; kesäjuhlat</p>
+        <button class="btn-ghost" id="logout-btn" title="Kirjaudu ulos">Vaihda käyttäjää</button>
+      </div>
+    </header>
+
+    <section class="section intro">
+      <div class="ornament-center" aria-hidden="true">✦</div>
+      <p class="lede">
+        Juhlimme perheemme uuden pienen tyttären kastepäivää, sekä samalla
+        <strong>Jamin</strong> ja <strong>Ellenin</strong> synttäreitä
+        ja <strong>Iivon</strong> uutta roolia isoveljenä.
+      </p>
+    </section>
+
+    <section class="section program">
+      <h2>Ohjelma</h2>
+
+      <article class="program-card">
+        <div class="program-time">klo 14.00</div>
+        <div class="program-body">
+          <h3>Ristiäiset</h3>
+          <p class="place">Petäjäveden vanha kirkko</p>
+          <p class="addr">Vanhankirkontie 9, 41900 Petäjävesi</p>
+          <p class="note">UNESCO-maailmanperintökohteessa toimitetaan kasteen sakramentti.</p>
+          <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Vanhankirkontie+9+41900+Pet%C3%A4j%C3%A4vesi" target="_blank" rel="noopener">Avaa kartalla →</a>
+        </div>
+      </article>
+
+      <article class="program-card">
+        <div class="program-time">klo 15–17</div>
+        <div class="program-body">
+          <h3>Juhlatilaisuus</h3>
+          <p class="place">Petäjäveden vanhan kirkon yhteydessä</p>
+          <p class="note">Kahvitus ja onnittelut kirkon läheisyydessä.</p>
+        </div>
+      </article>
+
+      <article class="program-card highlight">
+        <div class="program-time">Illalla</div>
+        <div class="program-body">
+          <h3>Kesäjuhlat Kuohulla</h3>
+          <p class="place">Meidän kotona</p>
+          <p class="addr">Joensuunmutka 40, 41930 Kuohu</p>
+          <p class="note">
+            Grilli kuumana, juhlapöytä katettuna ja sauna lämpimänä.
+            Juhlitaan samalla Jamin ja Ellenin synttäreitä sekä Iivon
+            uutta roolia isoveljenä.
+          </p>
+          <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Joensuunmutka+40+41930+Kuohu" target="_blank" rel="noopener">Avaa kartalla →</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="section remembering">
+      <div class="ornament-center" aria-hidden="true">✦</div>
+      <h2>Muistaminen</h2>
+      <p class="remembering-text">
+        Lapset hukkuvat muoviin ja sokeriin — heillä on kaikkea jo.
+        Tärkeintä meille on, että <strong>tuot itsesi paikalle</strong>,
+        jätät puhelimen rauhaan ja rauhoitut juhlimaan kanssamme päiväksi.
+      </p>
+      <p class="remembering-text">
+        Jos kuitenkin haluat muistaa lapsia, pienen lahjan voi siirtää
+        alla oleville tileille. Rahat sijoitetaan lasten omien
+        sijoitustiliensä kautta heidän tulevaisuuteensa.
+      </p>
+      <div class="accounts">
+        <div class="account">
+          <span class="account-name">Jami</span>
+          <span class="account-iban">FI00 0000 0000 0000 00</span>
+        </div>
+        <div class="account">
+          <span class="account-name">Ellen</span>
+          <span class="account-iban">FI00 0000 0000 0000 00</span>
+        </div>
+        <div class="account">
+          <span class="account-name">Iivo</span>
+          <span class="account-iban">FI00 0000 0000 0000 00</span>
+        </div>
+        <div class="account">
+          <span class="account-name">Pienokainen</span>
+          <span class="account-iban">FI00 0000 0000 0000 00</span>
+        </div>
+      </div>
+      <p class="accounts-note subtle">Tilinumerot päivittyvät lähempänä — kysy Kimmolta, jos haluat lähettää jo ennakkoon.</p>
+    </section>
+
+    <section class="section rsvp">
+      <h2>Ilmoittautuminen</h2>
+      <p class="section-sub">Ilmoita ensin itsesi, sen jälkeen voit ilmoittaa myös perheenjäseniä.</p>
+
+      <form id="rsvp-form" class="rsvp-form">
+        <div class="form-header">
+          <span id="form-mode-label" class="form-mode-label">Uusi ilmoittautuminen</span>
+          <button type="button" id="cancel-edit" class="link-btn hidden">Peruuta muokkaus</button>
+        </div>
+
+        <div class="field-group">
+          <label>Ketkä ilmoitat?</label>
+          <div class="toggle-row wrap people-chips" id="rsvp-people" role="group" aria-label="Valitse henkilöt">
+            <!-- täytetään JS:llä -->
+          </div>
+          <div class="single-person hidden" id="rsvp-person-single">
+            <span class="person-pill" id="rsvp-person-single-name"></span>
+          </div>
+          <p class="hint">Voit valita useamman henkilön kerralla — kaikille tallennetaan samat vastaukset.</p>
+        </div>
+
+        <div class="field-group">
+          <label>Tuletko juhliin?</label>
+          <div class="toggle-row">
+            <label class="chip">
+              <input type="radio" name="attending" value="yes" required />
+              <span>Tulen mukaan</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="attending" value="no" />
+              <span>En pääse</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group" id="overnight-group">
+          <label>Yövytkö meillä?</label>
+          <div class="toggle-row wrap">
+            <label class="chip"><input type="checkbox" name="overnight" value="to-pe"/><span>To–Pe</span></label>
+            <label class="chip"><input type="checkbox" name="overnight" value="pe-la"/><span>Pe–La</span></label>
+            <label class="chip"><input type="checkbox" name="overnight" value="la-su"/><span>La–Su</span></label>
+            <label class="chip"><input type="checkbox" name="overnight" value="ei"/><span>En yövy</span></label>
+          </div>
+          <p class="hint">Voit valita useamman yön jos jäät pidemmäksi aikaa.</p>
+        </div>
+
+        <div class="field-group">
+          <label for="rsvp-notes">Terveisiä / huomioita (vapaaehtoinen)</label>
+          <textarea id="rsvp-notes" rows="2" placeholder="esim. saapuminen, seuralainen, muuta…"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" id="rsvp-submit">Lähetä ilmoittautuminen</button>
+        <p id="rsvp-msg" class="success-line"></p>
+      </form>
+    </section>
+
+    <section class="section rsvp-list">
+      <h2>Ilmoittautuneet</h2>
+      <p class="section-sub">Näet reaaliajassa kenet voi odottaa paikalle.</p>
+      <div id="rsvp-list" class="rsvp-grid">
+        <p class="loading">Ladataan…</p>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div class="ornament-center" aria-hidden="true">✦</div>
+      <p>Kiitos, että jaatte kanssamme tämän päivän.</p>
+      <p class="subtle">Kimmo &amp; perhe · Kuohu 2026</p>
+    </footer>
+  </main>
+
+  <script type="module" src="app.js?v=7"></script>
+</body>
+</html>

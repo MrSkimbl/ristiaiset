@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Private christening site — password-gated at UI level.
+    // Anyone with the URL can read/write RSVPs (name-keyed docs).
+    // No other collections are writable.
+    match /rsvps/{name} {
+      allow read: if true;
+      allow create, update: if
+        request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() < 60
+        && request.resource.data.attending is bool
+        && (!('notes' in request.resource.data) || request.resource.data.notes.size() < 500);
+      allow delete: if true;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
