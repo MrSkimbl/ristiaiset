@@ -274,10 +274,16 @@ textarea { resize: vertical; font-family: var(--font-body); }
 
 .ornament-center {
   text-align: center;
-  color: var(--c-rose);
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.3em;
+  margin-bottom: 1.75rem;
+  line-height: 1;
+}
+
+.ornament-center svg {
+  width: 26px;
+  height: 26px;
+  fill: var(--c-rose);
+  opacity: 0.85;
+  display: inline-block;
 }
 
 .intro .lede {
@@ -458,74 +464,81 @@ textarea { resize: vertical; font-family: var(--font-body); }
 
 .rsvp-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
   margin-top: 1rem;
 }
 
-.rsvp-card {
+.family-card {
   background: #fffbf7;
   border: 1px solid var(--c-line);
   border-radius: var(--radius);
-  padding: 1.25rem 1.4rem;
+  padding: 1rem 1.1rem 0.5rem;
   box-shadow: var(--shadow-sm);
-  position: relative;
-  transition: transform 0.15s;
+  display: flex;
+  flex-direction: column;
 }
 
-.rsvp-card.attending { border-left: 4px solid var(--c-sage); }
-.rsvp-card.declined { border-left: 4px solid var(--c-rose); opacity: 0.78; }
+.family-card.own {
+  border-color: var(--c-rose);
+  background: linear-gradient(135deg, #fffbf7 0%, #fbece4 100%);
+  box-shadow: var(--shadow-md);
+}
 
-.rsvp-card .name {
+.family-heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--c-rose-deep);
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- Member row: yksi display-tyyli nimelle, yksi body-tyyli kaikelle muulle. --- */
+
+.member-row {
+  position: relative;
+  padding: 1rem 3.75rem 1rem 0.9rem;
+  border-top: 1px solid var(--c-line);
+  border-left: 3px solid transparent;
+}
+
+.family-card > .member-row:first-of-type { border-top: 0; }
+
+.member-row.attending { border-left-color: var(--c-sage); }
+.member-row.maybe     { border-left-color: var(--c-rose-deep); }
+.member-row.declined  { border-left-color: var(--c-rose); opacity: 0.7; }
+
+.member-row .name {
   font-family: var(--font-display);
   font-size: 1.35rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--c-plum);
-  margin: 0 0 0.2rem;
+  line-height: 1.15;
+  margin: 0;
 }
 
-.rsvp-card .status {
-  font-size: 0.85rem;
+.member-row .name .role {
   color: var(--c-muted);
-  margin: 0 0 0.5rem;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1em;
+}
+
+.member-row .meta,
+.member-row .notes {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--c-muted);
+  line-height: 1.5;
+  margin: 0.35rem 0 0;
+}
+
+.member-row .status {
+  color: var(--c-plum);
   font-weight: 500;
-}
-
-.rsvp-card.attending .status { color: var(--c-sage); }
-
-.rsvp-card .nights {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0.4rem 0;
-}
-
-.rsvp-card .night-tag {
-  background: rgba(168, 181, 160, 0.18);
-  color: #5a6b4f;
-  font-size: 0.78rem;
-  padding: 0.2rem 0.65rem;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-.rsvp-card .notes {
-  font-size: 0.88rem;
-  color: var(--c-muted);
-  font-style: italic;
-  margin: 0.5rem 0 0;
-  border-top: 1px solid var(--c-line);
-  padding-top: 0.5rem;
-}
-
-.rsvp-card .by {
-  position: absolute;
-  top: 0.7rem;
-  right: 0.9rem;
-  font-size: 0.7rem;
-  color: var(--c-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .loading, .empty {
@@ -613,6 +626,150 @@ textarea { resize: vertical; font-family: var(--font-body); }
   text-align: center;
   margin-top: 1.25rem;
   font-size: 0.88rem;
+}
+
+/* =====  Guess section  ===== */
+
+.guess-form {
+  background: linear-gradient(135deg, #fffbf7 0%, #fbece4 100%);
+  border: 1px solid var(--c-rose);
+  border-radius: var(--radius);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.guess-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.guess-view {
+  background: linear-gradient(135deg, #fffbf7 0%, #fbece4 100%);
+  border: 1px solid var(--c-rose);
+  border-radius: var(--radius);
+  padding: 2rem 2.25rem;
+  box-shadow: var(--shadow-sm);
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+.guess-view-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.guess-view-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 600;
+  color: var(--c-rose-deep);
+  font-style: italic;
+  line-height: 1.2;
+  margin: 0.15rem 0 0.7rem;
+}
+
+/* ===== Guess cloud ===== */
+
+.guess-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: center;
+  max-width: 780px;
+  margin: 2.5rem auto 0;
+}
+
+.guess-cloud:empty { display: none; }
+
+.guess-bubble {
+  background: #fffbf7;
+  border: 1px solid var(--c-line);
+  border-radius: 18px;
+  padding: 0.85rem 1.4rem;
+  min-width: 140px;
+  max-width: 240px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.guess-bubble:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.bubble-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--c-plum);
+  margin: 0 0 0.15rem;
+  line-height: 1.2;
+}
+
+.bubble-by {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--c-muted);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.member-row .row-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.4rem;
+  display: flex;
+  gap: 0.1rem;
+}
+
+.member-row .row-action {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--c-muted);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.member-row .row-action:hover {
+  color: var(--c-plum);
+  background: rgba(217, 165, 160, 0.22);
+}
+
+.member-row .row-action.delete:hover {
+  color: #a33a3a;
+  background: rgba(163, 58, 58, 0.1);
+}
+
+.member-row .row-action svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* =====  Form mode (edit / create)  ===== */
@@ -733,4 +890,43 @@ select:disabled {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====  Responsive tweaks  ===== */
+
+/* Keski-mobiili: vähennä padding-kerrosta, pakota RSVP-lista yhteen sarakkeeseen. */
+@media (max-width: 640px) {
+  .section { padding: 3.5rem 1.1rem; }
+  .rsvp-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  .rsvp-form { padding: 1.6rem 1.35rem; gap: 1.25rem; }
+  .guess-form { padding: 1.75rem 1.5rem; gap: 1rem; }
+  .guess-view { padding: 1.5rem 1.5rem; }
+  .family-card { padding: 0.85rem 1rem 0.4rem; }
+  .member-row {
+    padding: 0.7rem 0 0.8rem;
+    padding-left: 0.65rem;
+  }
+  .member-row .name { font-size: 1.1rem; }
+  .member-row .by {
+    position: static;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+  }
+  .member-row .card-actions { gap: 0.4rem; }
+  .card-btn { font-size: 0.8rem; padding: 0.4rem 0.55rem; }
+}
+
+/* Kapea mobiili: yksi chip per rivi, pienempi display-otsikko. */
+@media (max-width: 380px) {
+  .login-card { padding: 2.25rem 1.35rem 1.75rem; }
+  .section { padding: 3rem 0.9rem; }
+  .rsvp-form,
+  .guess-form { padding: 1.35rem 1.1rem; }
+  .guess-view { padding: 1.35rem 1.1rem; }
+  .chip span { padding: 0.6rem 0.9rem; font-size: 0.88rem; }
+  .people-chips .chip span { padding: 0.6rem 1rem; }
+  .person-pill { padding: 0.55rem 1.1rem; font-size: 1rem; }
 }

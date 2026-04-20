@@ -1,19 +1,52 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Private christening site — password-gated at UI level.
-    // Anyone with the URL can read/write RSVPs (name-keyed docs).
-    // No other collections are writable.
+    // Sallitut osallistujat. Tätä listaa voi muokata vain projektin ylläpitäjä
+    // deployaamalla säännöt uudestaan (`firebase deploy --only firestore:rules`).
+    function allowedName(name) {
+      return name in [
+        'Aada Höynälä', 'Aliisa Janatuinen', 'Amanda Kutuk', 'Antti Korhonen',
+        'Ari-Pekka Salonen', 'Eija Luoto', 'Eliel Luoto', 'Elina Tähkiö',
+        'Elisa Jokela', 'Ellen Louhelainen', 'Elsi Jaakonvaara', 'Emma Martikainen',
+        'Emmi Juntunen', 'Essi Rehel', 'Hanna-Sofia Luoto', 'Harri Jaakonvaara',
+        'Heidi Louhelainen', 'Heli Luoto', 'Hely Tähkiö', 'Henry Wilen',
+        'Iivo Louhelainen', 'Jami Louhelainen', 'Janne Louhelainen', 'Jarmo Kakkonen',
+        'Jenni Partinen', 'Jenni Virtanen', 'Johanna Tähkiö', 'Jukka Ohtonen',
+        'Kerttu Valkonen', 'Kimmo Louhelainen', 'Leena Airaksinen', 'Maija Kurki',
+        'Maire Luoto', 'Mari Moisio', 'Martti Louhelainen', 'Matti Luoto',
+        'Meme Kutuk', 'Miisa Jaakonvaara', 'Mikko Luoto', 'Mila Kutuk',
+        'Milla Nevanpää', 'Mustikka Louhelainen', 'Neela Ax', 'Nelli Nevanpää',
+        'Oiva Ax', 'Oliver Brouk', 'Olivia Brouk', 'Olli Patrakka',
+        'Olli-Pekka Höynälä', 'Onni Korhonen', 'Pete Luoto', 'Petra Salonen',
+        'Pia Ax', 'Päivi Karvala', 'Sanna Ax', 'Seppo Tähkiö',
+        'Tero Airaksinen', 'Timi Airaksinen', 'Tomi Brouk', 'Tuomo Janatuinen',
+        'Tuukka Airaksinen', 'Vauva Janatuinen', 'Vesa Luoto', 'Viola Brouk',
+        'Vivian Wilen', 'William Wilen'
+      ];
+    }
+
     match /rsvps/{name} {
       allow read: if true;
       allow create, update: if
-        request.resource.data.name is string
-        && request.resource.data.name.size() > 0
-        && request.resource.data.name.size() < 60
-        && request.resource.data.attending is bool
-        && (!('notes' in request.resource.data) || request.resource.data.notes.size() < 500);
-      allow delete: if true;
+        allowedName(name)
+        && request.resource.data.name == name
+        && request.resource.data.attending is string
+        && request.resource.data.attending in ['yes', 'maybe', 'no']
+        && (!('notes' in request.resource.data) || request.resource.data.notes.size() < 500)
+        && (!('nameGuess' in request.resource.data) || request.resource.data.nameGuess.size() < 100);
+      allow delete: if allowedName(name);
     }
+
+    match /guesses/{name} {
+      allow read: if true;
+      allow create, update: if
+        allowedName(name)
+        && request.resource.data.name == name
+        && request.resource.data.guess is string
+        && request.resource.data.guess.size() < 100;
+      allow delete: if allowedName(name);
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

@@ -13,20 +13,23 @@ Yksityinen staattinen juhlasivusto, jossa kutsutut voivat kirjautua yksinkertais
 - **Frontend:** puhdas HTML + CSS + ES-moduuli-JS. Ei rakennusvaihetta.
 - **Hosting:** Firebase Hosting (`public/` -kansio juurena).
 - **Tietokanta:** Firestore (yksi kokoelma `rsvps`).
-- **Autentikointi:** jaettu salasana UI-tasolla — ei Firebase Authia.
+- **Autentikointi:** ei autentikointia. Kirjautuminen on pelkkä nimen valinta dropdownista — turva luotu Firestore-säännöissä (whitelist + datan muoto) ja sen varassa, että URL on yksityinen.
 - **Fontit:** Google Fonts (Cormorant Garamond + Inter).
 - **Kuvat:** embed Wikimedia Commons (Petäjäveden vanha kirkko).
 
 ```
 .
 ├── firebase.json         # Hosting + Firestore rules config
-├── firestore.rules       # Firestoren suojaus
+├── firestore.rules       # Firestoren suojaus (ml. sallittujen nimien whitelist)
 ├── .firebaserc           # projekti-alias
 ├── public/
 │   ├── index.html        # koko sivu (login + juhla-näkymä)
 │   ├── styles.css        # tyyli (dusty rose + cream + plum)
-│   ├── app.js            # kirjautuminen, ilmoittautuminen, lista
+│   ├── app.js            # kirjautuminen, ilmoittautuminen, lista, arvaus
+│   ├── favicon.svg       # sivuston ikoni (mustikka)
 │   └── firebase-config.js # web-SDK config (julkiset avaimet)
+├── scripts/
+│   └── sync-names.mjs    # synkkaa PEOPLE → firestore.rules
 └── README.md
 ```
 
@@ -37,19 +40,27 @@ Yksityinen staattinen juhlasivusto, jossa kutsutut voivat kirjautua yksinkertais
 Seuraa näitä kun teet muutoksia — nämä on sovittu käyttäjän (Kimmo) kanssa:
 
 1. **Kieli:** kaikki UI-teksti on suomea.
-2. **Salasana:** `heinakuu2026` (vertailussa poistetaan diakriitit ja case → `heinäkuu2026` toimii myös). Määritelty `app.js`-tiedostossa `SHARED_PASSWORD`-vakiossa.
-3. **Vieraat rakenteessa `HOUSEHOLDS`** (`app.js`):
-   - `primary` = kirjautuva henkilö (näkyy login-dropdownissa).
-   - `members` = lisähenkilöt, joita primary voi ilmoittaa (näkyy chipeissä login jälkeen, eivät kirjaudu itse).
+2. **Autentikointi:** ei Firebase Authia, ei UI-tason salasanaa. Kirjautuminen = valitse nimesi dropdownista. Pääsynhallinta tapahtuu Firestore-säännöissä (whitelist 66 nimelle) ja sen turvana, että URL jaetaan vain kutsutuille.
+3. **Vieraat rakenteessa `PEOPLE`** (`app.js`): yksi flat-lista, jossa jokaisella kentät `{ name, cat, group, role? }`.
+   - `cat: 3` = aikuinen, `cat: 2` = lapsi, `cat: 1` = pieni lapsi (ei kirjaudu itse).
+   - `cat >= 2` näkyy login-dropdownissa; kaikilla kirjautuvilla samat oikeudet (login, RSVP, nimiarvaus).
+   - `cat === 1` (pienet lapset): eivät kirjaudu. Saman `group`-numeron aikuinen/lapsi valitsee heidät chipeistä RSVP-lomakkeessa ja ilmoittaa heidät samassa yhteydessä.
+   - `group`-numero on vain tekninen apu — **se ei näy UI:ssa missään**.
+   - `role` (valinnainen) = suhde päätähteen (Mustikkaan). Näkyy pienellä versaalialalla nimen vieressä RSVP-listassa.
 4. **RSVP-logiikka:**
-   - Dokumentin ID = henkilön nimi (yksi rivi per henkilö, uusi tallennus ylikirjoittaa).
-   - Multi-select: yksi submit voi luoda / päivittää usean henkilön RSVP:n samoilla tiedoilla.
+   - Dokumentin ID = henkilön nimi (yksi rivi per henkilö).
+   - Chip-valinta: itse + saman ryhmän cat 1 -lapset → samalla lähetyksellä voi ilmoittaa itsensä ja pienen lapsensa.
    - Edit-moodi: yhdelle henkilölle kerrallaan, `editingName` hallitsee tilaa.
-   - **Muokkaus/poisto-oikeus** rivillä: `row.name === currentUser || row.submittedBy === currentUser`.
-5. **Firestore-säännöt** ovat löysät (UI-taso gatea sisäänpääsyä). Dokumenttien datan muoto kuitenkin validoidaan säännöissä.
-6. **Kuohun osoite:** Joensuunmutka 40, 41930 Kuohu.
-7. **Kirkko:** Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi, klo 14.
-8. **Muistaminen-osio:** tilinumerot placeholder-muodossa (`FI00 0000 0000 0000 00`). Oikeat IBANit käyttäjän päätettävissä.
+   - **Muokkaus/poisto-oikeus** rivillä: `row.name === currentUser || row.submittedBy === currentUser`; lisäksi saman ryhmän jäsenet voivat muokata ryhmänsä cat 1 -lasten rivejä.
+   - Lajittelu listassa ja login-dropdownissa: aikuiset (cat 3) ensin, sitten lapset (cat 2), RSVP-listassa myös cat 1 -lapset perässä; nimi aakkosjärjestyksessä kategorian sisällä.
+5. **Nimiarvaus** (`guesses`-kokoelma):
+   - Oma osio ja lomake, näkyy ennen RSVP:tä kirjautumisen jälkeen.
+   - Vapaamuotoinen teksti, yksi arvaus per kirjautuva henkilö, muokattavissa milloin tahansa.
+   - Arvaus peilataan myös RSVP-dokumentin `nameGuess`-kenttään, jotta se näkyy RSVP-listassa julkisesti.
+6. **Firestore-säännöt**: dokumentin ID:n oltava yksi 66 whitelistatusta nimestä (`allowedName` `firestore.rules`:ssä). Sisällön muoto validoidaan (`rsvps` + `guesses`). Muita kokoelmia ei sallita.
+7. **Kuohun osoite:** Joensuunmutka 40, 41930 Kuohu.
+8. **Kirkko:** Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi, klo 14.
+9. **Muistaminen-osio:** tilinumerot placeholder-muodossa (`FI00 0000 0000 0000 00`). Oikeat IBANit käyttäjän päätettävissä.
 
 ---
 
@@ -95,26 +106,39 @@ firebase deploy --only firestore:rules --project ristiaiset-2026
 
 ## Yleisimmät muutokset
 
-### Lisää uusi vieras tai muokkaa ryhmiä
+### Lisää / muokkaa kutsuvieraita
 
-`public/app.js`:
+Osallistujalistaa muokataan vain ylläpitäjältä (sinä). Asiakaskirjoitukset Firestoreen on rajoitettu whitelistiin (`firestore.rules`), joten lisäyksen jälkeen on muistettava päivittää myös säännöt.
 
-```js
-const HOUSEHOLDS = [
-  { primary: "Maire",   members: ["Vesa"] },
-  { primary: "Heidi",   members: [] },
-  ...
-];
-```
+1. Muokkaa `public/app.js`:
 
-- Lisää uusi primary → näkyy login-dropdownissa.
-- Lisää `members`-listaan → näkyy primaryn chip-valinnoissa, ei kirjaudu itse.
+   ```js
+   const PEOPLE = [
+     { name: "Kimmo Louhelainen",    cat: 3, group: 0 },  // aikuinen
+     { name: "Iivo Louhelainen",     cat: 2, group: 0 },  // lapsi
+     { name: "Mustikka Louhelainen", cat: 1, group: 0 },  // pieni lapsi — vanhempi ilmoittaa
+   ];
+   ```
 
-Muista bump-ata `?v=N` parametri HTML:ssä ja deployata.
+   - `cat: 2` ja `cat: 3` → näkyvät login-dropdownissa, kirjautuvat itse.
+   - `cat: 1` → ei kirjaudu. Sama `group` kuin muilla ryhmän jäsenillä → näkyy heidän RSVP-chipeissään.
+   - Aakkosjärjestyksellä ei ole väliä — JS lajittelee listan ja rules-tiedosto generoidaan aakkosjärjestykseen.
 
-### Vaihda salasana
+2. Synkkaa nimet Firestore-sääntöihin:
 
-`public/app.js` → `const SHARED_PASSWORD = "uusi"`. Normalisointi poistaa diakriitit ja laskee case:n, joten käyttäjä voi kirjoittaa esim. "Uusi" tai "uüsi".
+   ```bash
+   node scripts/sync-names.mjs
+   ```
+
+   Skripti lukee `PEOPLE`-listan `app.js`:stä ja kirjoittaa ne uudelleen `firestore.rules`:n `allowedName`-funktioon.
+
+3. Bump-aa `?v=N`-parametri HTML:ssä ja deployaa molemmat:
+
+   ```bash
+   firebase deploy --only hosting,firestore:rules --project ristiaiset-2026
+   ```
+
+Jos skipppaat vaiheen 2, uusi vieras näkyy UI:ssa mutta Firestore hylkää hänen RSVP:nsä — jolloin sivusto virheilee kun hän yrittää tallentaa.
 
 ### Vaihda tilinumerot (Muistaminen-osio)
 
@@ -128,11 +152,14 @@ Hero-kuva on CSS-taustakuva: `public/styles.css` → `.hero { background: url('.
 
 ## Tietoturva / yksityisyys
 
-- Kyseessä on yksityinen perhesivusto → jaettu salasana on UX-tason lukko, ei oikeaa turvaa.
-- Firestore-säännöt sallivat kaikkien luku-, luonti-, muokkaus- ja poisto-operaatiot `rsvps`-kokoelmassa. Valotteko:
-  - Luodun/muokatun dokumentin **muoto** validoidaan (name string, attending bool, notes max 500 merk.).
-  - Mitään muuta kokoelmaa ei sallita.
-- Jos sivusto vuotaa (URL tai salasana), tietoina ovat vain vieraiden nimet + tulemista koskevat vastaukset. Ei sensitiivisiä kenttiä.
+- Kyseessä on yksityinen perhesivusto. Ei salasanaa eikä autentikointia — URL on se jakoavain.
+- **Firestore-säännöt** (`firestore.rules`) rajoittavat asiakaskirjoitukset:
+  - Dokumentin ID:n on oltava yksi 66 whitelistatusta nimestä (`allowedName`-funktio).
+  - `request.resource.data.name` on vastattava doc-ID:tä (estää spoofingin).
+  - `attending ∈ {yes, maybe, no}`, `notes < 500`, `nameGuess < 100` merkkiä.
+  - Muita kokoelmia ei sallita.
+- Käytännössä: devtoolsin kautta ei pääse luomaan roskarivejä — vain olemassa olevien vieraiden rivejä voi muokata.
+- Kotiosoite (Joensuunmutka 40) ja juhla-aika (24.7.2026) näkyvät kirjautumisen jälkeen. Jos URL + salasana vuotaa, huomioi että poissaolopäivä kotoa on potentiaalinen riski.
 
 ---
 
@@ -143,7 +170,7 @@ Hero-kuva on CSS-taustakuva: `public/styles.css` → `.hero { background: url('.
 - ✅ Firestore aktivoitu (EU-multi-region `eur3`)
 - ✅ Hosting + rules deployattu
 - ⏳ **Tilinumerot** täytyy vaihtaa placeholderista oikeiksi
-- ⏳ **Kutsulistat / household-ryhmät** täytyy täydentää oikeiksi
+- ✅ **Kutsulista (`PEOPLE`)** täytetty CSV:n mukaan (66 henkilöä, 21 perheryhmää)
 
 ---
 

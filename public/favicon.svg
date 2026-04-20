@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="berry" cx="38%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#8a6d7c"/>
+      <stop offset="50%" stop-color="#3d2a35"/>
+      <stop offset="100%" stop-color="#1f1419"/>
+    </radialGradient>
+    <radialGradient id="berrySmall" cx="38%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#6f5464"/>
+      <stop offset="55%" stop-color="#2d1e27"/>
+      <stop offset="100%" stop-color="#140a0f"/>
+    </radialGradient>
+  </defs>
+  <!-- Sage leaf behind, curving left -->
+  <path d="M10 18 Q4 8 18 4 Q26 14 18 26 Q10 24 10 18 Z"
+        fill="#a8b5a0" opacity="0.9"/>
+  <!-- Secondary smaller berry behind/right -->
+  <circle cx="48" cy="44" r="13" fill="url(#berrySmall)"/>
+  <!-- Main berry -->
+  <circle cx="28" cy="36" r="22" fill="url(#berry)"/>
+  <!-- Frost bloom highlight on main berry -->
+  <ellipse cx="19" cy="26" rx="6" ry="3.5" fill="#fbece4" opacity="0.32"
+           transform="rotate(-28 19 26)"/>
+  <!-- Tiny calyx dimple on main berry, off-center to top-right -->
+  <circle cx="37" cy="22" r="2.8" fill="#140a0f"/>
+  <circle cx="37" cy="22" r="1.1" fill="#3d2a35" opacity="0.7"/>
+</svg>

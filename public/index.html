@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#d9a5a0" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <title>Ristiäiset &amp; Lasten juhlat · 24.7.2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,10 +34,6 @@
             <option value="" disabled selected>— Valitse nimesi —</option>
           </select>
         </label>
-        <label>
-          <span>Salasana</span>
-          <input id="login-password" type="password" inputmode="text" autocomplete="off" required />
-        </label>
         <button type="submit" class="btn-primary">Astu sisään</button>
         <p id="login-error" class="error-line" role="alert"></p>
       </form>
@@ -56,15 +53,16 @@
     </header>
 
     <section class="section intro">
-      <div class="ornament-center" aria-hidden="true">✦</div>
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <p class="lede">
-        Juhlimme perheemme uuden pienen tyttären kastepäivää, sekä samalla
+        Juhlimme perheemme <strong>pienen tyttären kastepäivää</strong>, sekä samalla
         <strong>Jamin</strong> ja <strong>Ellenin</strong> synttäreitä
         ja <strong>Iivon</strong> uutta roolia isoveljenä.
       </p>
     </section>
 
     <section class="section program">
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Ohjelma</h2>
 
       <article class="program-card">
@@ -104,10 +102,10 @@
     </section>
 
     <section class="section remembering">
-      <div class="ornament-center" aria-hidden="true">✦</div>
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Muistaminen</h2>
       <p class="remembering-text">
-        Lapset hukkuvat muoviin ja sokeriin — heillä on kaikkea jo.
+        Lapset hukkuvat muoviin ja sokeriin. Heillä on jo kaikkea.
         Tärkeintä meille on, että <strong>tuot itsesi paikalle</strong>,
         jätät puhelimen rauhaan ja rauhoitut juhlimaan kanssamme päiväksi.
       </p>
@@ -134,16 +132,42 @@
           <span class="account-iban">FI00 0000 0000 0000 00</span>
         </div>
       </div>
-      <p class="accounts-note subtle">Tilinumerot päivittyvät lähempänä — kysy Kimmolta, jos haluat lähettää jo ennakkoon.</p>
+    </section>
+
+    <section class="section guess">
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
+      <h2>Arvaa Mustikan oikea nimi</h2>
+      <p class="section-sub">Jääkö hänen nimekseen Mustikka vai löytyykö vielä parempi nimi pienelle tytölle? Kirjoita arvauksesi, voit muuttaa sitä myöhemmin.</p>
+
+      <div id="guess-view" class="guess-view hidden">
+        <span class="guess-view-label">Arvauksesi</span>
+        <span class="guess-view-value" id="guess-view-value"></span>
+        <button type="button" class="link-btn" id="guess-edit-btn">Muokkaa arvausta</button>
+      </div>
+
+      <form id="guess-form" class="guess-form">
+        <div class="field-group">
+          <label for="guess-input">Oma arvaukseni</label>
+          <input type="text" id="guess-input" name="guess" maxlength="80" placeholder="esim. Mustikka Vauvaliini" autocomplete="off" />
+        </div>
+        <div class="guess-actions">
+          <button type="submit" class="btn-primary" id="guess-submit">Tallenna arvaus</button>
+          <button type="button" class="link-btn hidden" id="guess-cancel">Peruuta</button>
+        </div>
+        <p id="guess-msg" class="success-line"></p>
+      </form>
+
+      <div id="guess-cloud" class="guess-cloud"></div>
     </section>
 
     <section class="section rsvp">
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Ilmoittautuminen</h2>
-      <p class="section-sub">Ilmoita ensin itsesi, sen jälkeen voit ilmoittaa myös perheenjäseniä.</p>
+      <p class="section-sub">Ilmoita itsesi ja halutessasi myös muut perheenjäsenesi. Voit muuttaa tietoja myöhemmin.</p>
 
       <form id="rsvp-form" class="rsvp-form">
-        <div class="form-header">
-          <span id="form-mode-label" class="form-mode-label">Uusi ilmoittautuminen</span>
+        <div class="form-header hidden" id="form-header">
+          <span id="form-mode-label" class="form-mode-label"></span>
           <button type="button" id="cancel-edit" class="link-btn hidden">Peruuta muokkaus</button>
         </div>
 
@@ -155,32 +179,36 @@
           <div class="single-person hidden" id="rsvp-person-single">
             <span class="person-pill" id="rsvp-person-single-name"></span>
           </div>
-          <p class="hint">Voit valita useamman henkilön kerralla — kaikille tallennetaan samat vastaukset.</p>
+          <p class="hint" id="rsvp-people-hint">Voit valita itsesi lisäksi oman perheryhmäsi jäseniä — kaikille valituille tallennetaan samat vastaukset.</p>
         </div>
 
         <div class="field-group">
-          <label>Tuletko juhliin?</label>
-          <div class="toggle-row">
+          <label id="lbl-attending">Tuletko juhliin?</label>
+          <div class="toggle-row wrap">
             <label class="chip">
               <input type="radio" name="attending" value="yes" required />
-              <span>Tulen mukaan</span>
+              <span id="lbl-attend-yes">Tulen mukaan</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="attending" value="maybe" />
+              <span>Ehkä</span>
             </label>
             <label class="chip">
               <input type="radio" name="attending" value="no" />
-              <span>En pääse</span>
+              <span id="lbl-attend-no">En pääse</span>
             </label>
           </div>
         </div>
 
         <div class="field-group" id="overnight-group">
-          <label>Yövytkö meillä?</label>
+          <label id="lbl-overnight">Yövytkö meillä?</label>
           <div class="toggle-row wrap">
             <label class="chip"><input type="checkbox" name="overnight" value="to-pe"/><span>To–Pe</span></label>
             <label class="chip"><input type="checkbox" name="overnight" value="pe-la"/><span>Pe–La</span></label>
             <label class="chip"><input type="checkbox" name="overnight" value="la-su"/><span>La–Su</span></label>
-            <label class="chip"><input type="checkbox" name="overnight" value="ei"/><span>En yövy</span></label>
+            <label class="chip"><input type="checkbox" name="overnight" value="ei"/><span id="lbl-night-ei">En yövy</span></label>
           </div>
-          <p class="hint">Voit valita useamman yön jos jäät pidemmäksi aikaa.</p>
+          <p class="hint">Oletamme kaikkien halukkaiden mahtuvan yöpymään. Tarvittaessa keskikokoiset lapset nautiskelevat ulkona leirielämästä.</p>
         </div>
 
         <div class="field-group">
@@ -194,20 +222,19 @@
     </section>
 
     <section class="section rsvp-list">
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Ilmoittautuneet</h2>
-      <p class="section-sub">Näet reaaliajassa kenet voi odottaa paikalle.</p>
       <div id="rsvp-list" class="rsvp-grid">
         <p class="loading">Ladataan…</p>
       </div>
     </section>
 
     <footer class="site-footer">
-      <div class="ornament-center" aria-hidden="true">✦</div>
+      <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <p>Kiitos, että jaatte kanssamme tämän päivän.</p>
-      <p class="subtle">Kimmo &amp; perhe · Kuohu 2026</p>
     </footer>
   </main>
 
-  <script type="module" src="app.js?v=7"></script>
+  <script type="module" src="app.js?v=30"></script>
 </body>
 </html>
