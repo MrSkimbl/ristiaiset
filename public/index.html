@@ -31,7 +31,7 @@
         <label>
           <span>Kuka olet?</span>
           <select id="login-name" required>
-            <option value="" disabled selected>— Valitse nimesi —</option>
+            <option value="" disabled selected>Valitse nimesi</option>
           </select>
         </label>
         <button type="submit" class="btn-primary">Astu sisään</button>
@@ -186,7 +186,7 @@
     <section class="section rsvp">
       <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Ilmoittautuminen</h2>
-      <p class="section-sub">Ilmoita itsesi vaikka heti ja halutessasi myös muut perheenjäsenesi — tietoja voi muuttaa myöhemmin samasta lomakkeesta tai ilmoittautuneiden listalta. Toivomme ilmoittautumiset 30.6.2026 mennessä.</p>
+      <p class="section-sub">Ilmoita itsesi vaikka heti ja halutessasi myös muut perheenjäsenesi. Tietoja voi muuttaa myöhemmin samasta lomakkeesta tai ilmoittautuneiden listalta. Toivomme ilmoittautumiset 30.6.2026 mennessä.</p>
 
       <form id="rsvp-form" class="rsvp-form">
         <div class="form-header hidden" id="form-header">
@@ -202,7 +202,7 @@
           <div class="single-person hidden" id="rsvp-person-single">
             <span class="person-pill" id="rsvp-person-single-name"></span>
           </div>
-          <p class="hint" id="rsvp-people-hint">Voit valita itsesi lisäksi oman perheryhmäsi jäseniä — kaikille valituille tallennetaan samat vastaukset.</p>
+          <p class="hint" id="rsvp-people-hint">Voit valita itsesi lisäksi oman perheryhmäsi jäseniä, jolloin kaikille valituille tallennetaan samat vastaukset.</p>
         </div>
 
         <div class="field-group">
@@ -254,8 +254,8 @@
 
     <section class="section stay-tuned-section">
       <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
-      <h2>Pysy mukana juhlissa</h2>
-      <p class="section-sub">Liity WhatsApp-ryhmään kuvia ja kuulumisia varten — ja merkkaa päivä kalenteriin, niin se ei pääse unohtumaan.</p>
+      <h2>Kohti juhlapäivää</h2>
+      <p class="section-sub">Liity WhatsApp-ryhmään kuvia ja kuulumisia varten. Merkkaa päivä kalenteriin, niin se ei pääse unohtumaan.</p>
 
       <a class="whatsapp-card" href="https://chat.whatsapp.com/Cisa2TMLOK0LXedDYMbcSz" target="_blank" rel="noopener">
         <span class="whatsapp-icon" aria-hidden="true">
@@ -273,29 +273,25 @@
         <div class="calendar-buttons">
           <a id="cal-google" class="cal-btn" href="#" target="_blank" rel="noopener">
             <span class="cal-btn-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M12.5 11v2.4h5.2c-.2 1.3-1.4 3.8-5.2 3.8-3.1 0-5.7-2.6-5.7-5.7s2.6-5.7 5.7-5.7c1.8 0 3 .8 3.7 1.4l1.5-1.5C16.6 4.5 14.7 3.7 12.5 3.7c-4.6 0-8.3 3.7-8.3 8.3s3.7 8.3 8.3 8.3c4.8 0 8-3.4 8-8.1 0-.5 0-.9-.1-1.2h-7.9z"/>
               </svg>
             </span>
-            <span>Google Kalenteri</span>
+            <span>Google</span>
           </a>
-          <a id="cal-outlook" class="cal-btn" href="#" download="mustikan-ristiaiset.ics">
+          <a id="cal-outlook" class="cal-btn" href="#" target="_blank" rel="noopener">
             <span class="cal-btn-icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="4" fill="#0078D4"/>
-                <path fill="#fff" d="M11.5 9.5c-3.04 0-5.5 2.91-5.5 6.5s2.46 6.5 5.5 6.5 5.5-2.91 5.5-6.5-2.46-6.5-5.5-6.5zm0 10.5c-1.66 0-3-1.79-3-4s1.34-4 3-4 3 1.79 3 4-1.34 4-3 4z"/>
-                <path fill="#fff" d="M17 11h10v2H17zM17 14.5h10v2H17zM17 18h10v2H17z" opacity="0.85"/>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M9 4C5.7 4 3 7.6 3 12s2.7 8 6 8 6-3.6 6-8-2.7-8-6-8zm0 12.6c-1.9 0-3.5-2.1-3.5-4.6S7.1 7.4 9 7.4s3.5 2.1 3.5 4.6S10.9 16.6 9 16.6z"/>
+                <path d="M16 8.6h5v1.3h-5zM16 11.3h5v1.3h-5zM16 14h5v1.3h-5z"/>
               </svg>
             </span>
             <span>Outlook</span>
           </a>
           <a id="cal-apple" class="cal-btn" href="#" download="mustikan-ristiaiset.ics">
-            <span class="cal-btn-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#000" d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            <span class="cal-btn-icon cal-btn-icon-apple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
               </svg>
             </span>
             <span>Apple</span>
@@ -340,6 +336,6 @@
     </footer>
   </main>
 
-  <script type="module" src="app.js?v=35"></script>
+  <script type="module" src="app.js?v=36"></script>
 </body>
 </html>

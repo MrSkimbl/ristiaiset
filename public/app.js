@@ -1,4 +1,4 @@
-// Ristiäiset — login, RSVP (itse + pienet lapset), nimiarvaus, live-lista
+// Ristiäiset: login, RSVP (itse + pienet lapset), nimiarvaus, live-lista
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot,
@@ -11,7 +11,7 @@ import { firebaseConfig } from "./firebase-config.js";
 // cat: 1 = pieni lapsi (ei kirjaudu itse, saman ryhmän aikuinen/lapsi ilmoittaa)
 //      2 = lapsi (kirjautuu itse)
 //      3 = aikuinen (kirjautuu itse)
-// group = perheryhmä. Ei näy missään UI:ssa — käytetään vain jotta vanhemmat
+// group = perheryhmä. Ei näy missään UI:ssa, käytetään vain jotta vanhemmat
 // saavat oman ryhmänsä cat 1 -lapset chip-valintoihin.
 // Rooli = suhde Mustikkaan (päätähti). Puolisot ja niin edelleen jäävät ilman roolia.
 const PEOPLE = [
@@ -173,7 +173,7 @@ let unsubscribeGuess = null;
 
 // ---------- Build login dropdown ----------
 function fillLoginOptions() {
-  loginNameSel.innerHTML = `<option value="" disabled selected>— Valitse nimesi —</option>` +
+  loginNameSel.innerHTML = `<option value="" disabled selected>Valitse nimesi</option>` +
     loginCandidates().map(p => `<option value="${p.name}">${p.name}</option>`).join("");
 }
 fillLoginOptions();
@@ -570,7 +570,7 @@ function renderGuessCloud() {
     return `
       <div class="guess-bubble">
         <p class="bubble-name">${escapeHtml(g.guess)}</p>
-        <p class="bubble-by">— ${escapeHtml(byText)}</p>
+        <p class="bubble-by">${escapeHtml(byText)}</p>
       </div>
     `;
   }).join("");
@@ -644,14 +644,16 @@ guessForm.addEventListener("submit", async (e) => {
 });
 
 // ---------- Kalenterikutsut ----------
+// Helsinki kesäaikana (EEST) on UTC+3. 24.7.2026 on kesäaikaa.
+// 14:00 EEST = 11:00Z, 22:00 EEST = 19:00Z.
 const EVENT_DATA = {
-  title: "Mustikan ristiäiset & kesäjuhlat",
+  title: "Mustikan ristiäiset ja kesäjuhlat",
   startLocal: "20260724T140000",
   endLocal:   "20260724T220000",
-  startISO:   "2026-07-24T14:00:00+03:00",
-  endISO:     "2026-07-24T22:00:00+03:00",
+  startUtc:   "2026-07-24T11:00:00Z",
+  endUtc:     "2026-07-24T19:00:00Z",
   location:   "Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi",
-  description: "Klo 14.00–14.30 ristiäiset Petäjäveden vanhassa kirkossa.\nKlo 14.30–16.30 juhlatilaisuus Lemettilän Tilalla, Siltatie 23, 41900 Petäjävesi.\nIllalla kesäjuhlat Kuohulla, Joensuunmutka 40, 41930 Kuohu."
+  description: "Klo 14.00 ristiäiset Petäjäveden vanhassa kirkossa. Klo 14.30 juhlatilaisuus Lemettilän Tilalla, Siltatie 23. Illalla kesäjuhlat Kuohulla, Joensuunmutka 40."
 };
 
 function buildCalendarLinks() {
@@ -662,6 +664,16 @@ function buildCalendarLinks() {
     `&ctz=Europe/Helsinki` +
     `&details=${encodeURIComponent(EVENT_DATA.description)}` +
     `&location=${encodeURIComponent(EVENT_DATA.location)}`;
+
+  // Outlook web deeplink: oikea polku on /calendar/deeplink/compose (ei /0/).
+  // UTC-aikaleimat (Z) varmistavat että aika tulkitaan oikein.
+  const outlookUrl =
+    "https://outlook.live.com/calendar/deeplink/compose?path=/calendar/action/compose&rru=addevent" +
+    `&subject=${encodeURIComponent(EVENT_DATA.title)}` +
+    `&startdt=${encodeURIComponent(EVENT_DATA.startUtc)}` +
+    `&enddt=${encodeURIComponent(EVENT_DATA.endUtc)}` +
+    `&location=${encodeURIComponent(EVENT_DATA.location)}` +
+    `&body=${encodeURIComponent(EVENT_DATA.description)}`;
 
   const ics = [
     "BEGIN:VCALENDAR",
@@ -686,8 +698,8 @@ function buildCalendarLinks() {
   const oEl = document.getElementById("cal-outlook");
   const aEl = document.getElementById("cal-apple");
   if (gEl) gEl.href = googleUrl;
-  // Outlook ja Apple lataavat saman .ics-tiedoston: laajimmin yhteensopiva tapa.
-  if (oEl) oEl.href = icsUrl;
+  if (oEl) oEl.href = outlookUrl;
+  // Apple: .ics-lataus on luotettavin tapa avata tapahtuma Apple Calendarissa.
   if (aEl) aEl.href = icsUrl;
 }
 buildCalendarLinks();
