@@ -92,6 +92,14 @@ function groupOf(name) { return personByName(name)?.group ?? -1; }
 function roleOf(name)  { return personByName(name)?.role  ?? ""; }
 function firstNameOf(name) { return String(name || "").split(" ")[0]; }
 
+// Lapsista (cat 1 ja 2) näytetään UI:ssa vain etunimi. Aikuisilla (cat 3)
+// koko nimi, jolloin esim. kaksi Jenniä erottuvat toisistaan luonnostaan.
+function displayName(fullName) {
+  const p = personByName(fullName);
+  if (!p) return fullName || "";
+  return p.cat <= 2 ? firstNameOf(fullName) : fullName;
+}
+
 // Etunimen genitiivi. Käyttää ensin PEOPLE-listan gen-kenttää (jos asetettu),
 // muuten heuristiikkaa: vokaaliloppuiset +n, konsonanttiloppuiset +in.
 function genitiveOf(fullName) {
@@ -220,7 +228,7 @@ function fillPeopleChips() {
     return `
       <label class="chip">
         <input type="checkbox" name="person" value="${escapeHtml(n)}" />
-        <span>${escapeHtml(n)}${suffix}</span>
+        <span>${escapeHtml(displayName(n))}${suffix}</span>
       </label>
     `;
   }).join("");
@@ -248,7 +256,7 @@ function getSession() { return localStorage.getItem("ristiaiset.user"); }
 function enterApp(name) {
   currentUser = name;
   selectedGuessPerson = name;
-  heroGreeting.innerHTML = `Tervetuloa juhliin<br>${escapeHtml(name)}!`;
+  heroGreeting.innerHTML = `Tervetuloa juhliin<br>${escapeHtml(firstNameOf(name))}!`;
   fillPeopleChips();
   fillGuessPeopleChips();
   resetFormToDefault();
@@ -357,7 +365,7 @@ function enterEditMode(row) {
 
   peopleChipsEl.classList.add("hidden");
   singlePersonEl.classList.remove("hidden");
-  singlePersonNameEl.textContent = row.name;
+  singlePersonNameEl.textContent = displayName(row.name);
   if (peopleHintEl) peopleHintEl.classList.add("hidden");
 
   const attendingVal = row.attending || (row.attending === false ? "no" : "yes");
@@ -371,7 +379,7 @@ function enterEditMode(row) {
 
   rsvpNotes.value = row.notes || "";
 
-  formModeLabel.textContent = `Muokataan: ${row.name}`;
+  formModeLabel.textContent = `Muokataan: ${displayName(row.name)}`;
   formModeLabel.classList.add("editing");
   if (formHeaderEl) formHeaderEl.classList.remove("hidden");
   cancelEditBtn.classList.remove("hidden");
@@ -456,8 +464,8 @@ rsvpForm.addEventListener("submit", async (e) => {
     rsvpMsg.textContent = editingName
       ? `${genitiveOf(editingName)} tiedot päivitetty.`
       : (people.length === 1
-          ? `Kiitos! ${people[0]} on ilmoitettu.`
-          : `Kiitos! ${people.length} henkilöä ilmoitettu (${people.join(", ")}).`);
+          ? `Kiitos! ${displayName(people[0])} on ilmoitettu.`
+          : `Kiitos! ${people.length} henkilöä ilmoitettu (${people.map(displayName).join(", ")}).`);
     rsvpMsg.style.color = "";
     const submittedAttending = attending;
     const wasEdit = !!editingName;
@@ -525,9 +533,10 @@ function renderMemberRow(r) {
     : "";
 
   const role = roleOf(r.name);
+  const dispName = displayName(r.name);
   const nameHtml = role
-    ? `${escapeHtml(r.name)}<span class="role">, ${escapeHtml(role)}</span>`
-    : escapeHtml(r.name);
+    ? `${escapeHtml(dispName)}<span class="role">, ${escapeHtml(role)}</span>`
+    : escapeHtml(dispName);
 
   return `
     <div class="member-row ${attClass}">
@@ -668,9 +677,11 @@ function renderGuessCloud() {
   }
   const sorted = [...others].sort((a, b) => a.name.localeCompare(b.name, "fi"));
   guessCloudEl.innerHTML = sorted.map(g => {
-    const firstName = g.name.split(" ")[0];
+    // Lapset näytetään etunimellä, aikuiset koko nimellä (jolloin esim. kaksi
+    // samannimistä aikuista erottuvat toisistaan luonnostaan).
+    const dispName = displayName(g.name);
     const role = roleOf(g.name);
-    const byText = role ? `${firstName}, ${role}` : firstName;
+    const byText = role ? `${dispName}, ${role}` : dispName;
     return `
       <div class="guess-bubble">
         <p class="bubble-name">${escapeHtml(g.guess)}</p>
