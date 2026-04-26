@@ -1298,22 +1298,10 @@ select:disabled {
   display: block;
 }
 
-/* Apple-silhuetti on visuaalisesti raskaampi: hieman pienemmäksi ja kevyempi opacity. */
-.cal-btn-icon-apple {
-  width: 15px;
-  height: 15px;
-  opacity: 0.8;
-}
-
-.cal-btn-icon-apple svg {
-  width: 15px;
-  height: 15px;
-}
-
 @media (max-width: 380px) {
   .cal-btn {
     font-size: 0.82rem;
-    padding: 0.6rem 0.4rem;
+    padding: 0.6rem 0.5rem;
     gap: 0.35rem;
   }
 }

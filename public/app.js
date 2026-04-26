@@ -644,14 +644,13 @@ guessForm.addEventListener("submit", async (e) => {
 });
 
 // ---------- Kalenterikutsut ----------
-// Helsinki kesäaikana (EEST) on UTC+3. 24.7.2026 on kesäaikaa.
-// 14:00 EEST = 11:00Z, 22:00 EEST = 19:00Z.
+// Google avataan web-URL:lla. Outlook ja Apple lataavat saman .ics-tiedoston:
+// Outlookin web-deeplink on epäluotettava (mm. tulkitsee aikavyöhykkeen
+// väärin), joten .ics on selvästi paras vaihtoehto.
 const EVENT_DATA = {
   title: "Mustikan ristiäiset ja kesäjuhlat",
   startLocal: "20260724T140000",
   endLocal:   "20260724T220000",
-  startUtc:   "2026-07-24T11:00:00Z",
-  endUtc:     "2026-07-24T19:00:00Z",
   location:   "Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi",
   description: "Klo 14.00 ristiäiset Petäjäveden vanhassa kirkossa. Klo 14.30 juhlatilaisuus Lemettilän Tilalla, Siltatie 23. Illalla kesäjuhlat Kuohulla, Joensuunmutka 40."
 };
@@ -665,22 +664,31 @@ function buildCalendarLinks() {
     `&details=${encodeURIComponent(EVENT_DATA.description)}` +
     `&location=${encodeURIComponent(EVENT_DATA.location)}`;
 
-  // Outlook web deeplink: oikea polku on /calendar/deeplink/compose (ei /0/).
-  // UTC-aikaleimat (Z) varmistavat että aika tulkitaan oikein.
-  const outlookUrl =
-    "https://outlook.live.com/calendar/deeplink/compose?path=/calendar/action/compose&rru=addevent" +
-    `&subject=${encodeURIComponent(EVENT_DATA.title)}` +
-    `&startdt=${encodeURIComponent(EVENT_DATA.startUtc)}` +
-    `&enddt=${encodeURIComponent(EVENT_DATA.endUtc)}` +
-    `&location=${encodeURIComponent(EVENT_DATA.location)}` +
-    `&body=${encodeURIComponent(EVENT_DATA.description)}`;
-
+  // Itsenäinen VTIMEZONE-määrittely tekee aikavyöhykkeestä yksiselitteisen
+  // kaikille kalenteriasiakkaille (Outlook desktop/web, Apple Calendar, ym.).
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Mustikan ristiaiset//FI",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
+    "BEGIN:VTIMEZONE",
+    "TZID:Europe/Helsinki",
+    "BEGIN:STANDARD",
+    "DTSTART:19701025T040000",
+    "TZOFFSETFROM:+0300",
+    "TZOFFSETTO:+0200",
+    "TZNAME:EET",
+    "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+    "END:STANDARD",
+    "BEGIN:DAYLIGHT",
+    "DTSTART:19700329T030000",
+    "TZOFFSETFROM:+0200",
+    "TZOFFSETTO:+0300",
+    "TZNAME:EEST",
+    "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+    "END:DAYLIGHT",
+    "END:VTIMEZONE",
     "BEGIN:VEVENT",
     "UID:mustikan-ristiaiset-2026-07-24@louhelainen.fi",
     "DTSTAMP:20260101T000000Z",
@@ -695,12 +703,9 @@ function buildCalendarLinks() {
   const icsUrl = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 
   const gEl = document.getElementById("cal-google");
-  const oEl = document.getElementById("cal-outlook");
-  const aEl = document.getElementById("cal-apple");
+  const iEl = document.getElementById("cal-ics");
   if (gEl) gEl.href = googleUrl;
-  if (oEl) oEl.href = outlookUrl;
-  // Apple: .ics-lataus on luotettavin tapa avata tapahtuma Apple Calendarissa.
-  if (aEl) aEl.href = icsUrl;
+  if (iEl) iEl.href = icsUrl;
 }
 buildCalendarLinks();
 
