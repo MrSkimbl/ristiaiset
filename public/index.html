@@ -160,22 +160,20 @@
     <section class="section guess">
       <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <h2>Arvaa Mustikan oikea nimi</h2>
-      <p class="section-sub">Jääkö hänen nimekseen Mustikka vai löytyykö vielä parempi nimi pienelle tytölle? Kirjoita arvauksesi, voit muuttaa sitä myöhemmin.</p>
-
-      <div id="guess-view" class="guess-view hidden">
-        <span class="guess-view-label">Arvauksesi</span>
-        <span class="guess-view-value" id="guess-view-value"></span>
-        <button type="button" class="link-btn" id="guess-edit-btn">Muokkaa arvausta</button>
-      </div>
+      <p class="section-sub">Jääkö hänen nimekseen Mustikka vai löytyykö vielä parempi nimi pienelle tytölle? Voit tallentaa arvauksen itsesi tai perheenjäsentesi puolesta.</p>
 
       <form id="guess-form" class="guess-form">
+        <div class="field-group hidden" id="guess-people-group">
+          <label>Kuka arvaa?</label>
+          <div class="toggle-row wrap people-chips" id="guess-people" role="group" aria-label="Valitse arvaaja"></div>
+        </div>
         <div class="field-group">
-          <label for="guess-input">Oma arvaukseni</label>
+          <label for="guess-input" id="guess-input-label">Oma arvaukseni</label>
           <input type="text" id="guess-input" name="guess" maxlength="80" placeholder="esim. Mustikka Vauvaliini" autocomplete="off" />
+          <p class="hint hidden" id="guess-existing-hint"></p>
         </div>
         <div class="guess-actions">
           <button type="submit" class="btn-primary" id="guess-submit">Tallenna arvaus</button>
-          <button type="button" class="link-btn hidden" id="guess-cancel">Peruuta</button>
         </div>
         <p id="guess-msg" class="success-line"></p>
       </form>
@@ -330,6 +328,6 @@
     </footer>
   </main>
 
-  <script type="module" src="app.js?v=37"></script>
+  <script type="module" src="app.js?v=38"></script>
 </body>
 </html>

@@ -141,11 +141,11 @@ const guessForm = document.getElementById("guess-form");
 const guessInput = document.getElementById("guess-input");
 const guessMsg = document.getElementById("guess-msg");
 const guessSubmitBtn = document.getElementById("guess-submit");
-const guessCancelBtn = document.getElementById("guess-cancel");
-const guessViewEl = document.getElementById("guess-view");
-const guessViewValueEl = document.getElementById("guess-view-value");
-const guessEditBtn = document.getElementById("guess-edit-btn");
 const guessCloudEl = document.getElementById("guess-cloud");
+const guessPeopleEl = document.getElementById("guess-people");
+const guessPeopleGroupEl = document.getElementById("guess-people-group");
+const guessInputLabelEl = document.getElementById("guess-input-label");
+const guessExistingHintEl = document.getElementById("guess-existing-hint");
 
 const rsvpForm = document.getElementById("rsvp-form");
 const rsvpNotes = document.getElementById("rsvp-notes");
@@ -165,9 +165,8 @@ const peopleHintEl = document.getElementById("rsvp-people-hint");
 let currentUser = null;
 let currentRsvps = [];
 let allGuesses = [];
-let currentGuess = null;
 let editingName = null;
-let editingGuess = false;
+let selectedGuessPerson = null;
 let unsubscribeRsvps = null;
 let unsubscribeGuess = null;
 
@@ -213,9 +212,12 @@ function getSession() { return localStorage.getItem("ristiaiset.user"); }
 
 function enterApp(name) {
   currentUser = name;
+  selectedGuessPerson = name;
   heroGreeting.innerHTML = `Tervetuloa juhliin<br>${escapeHtml(name)}!`;
   fillPeopleChips();
+  fillGuessPeopleChips();
   resetFormToDefault();
+  renderGuessForm();
   setView("app");
   subscribeRsvps();
   subscribeGuess();
@@ -255,8 +257,7 @@ logoutBtn.addEventListener("click", () => {
   if (unsubscribeGuess) { unsubscribeGuess(); unsubscribeGuess = null; }
   clearSession();
   currentUser = null;
-  currentGuess = null;
-  editingGuess = false;
+  selectedGuessPerson = null;
   loginNameSel.value = "";
   setView("login");
 });
@@ -550,10 +551,70 @@ function subscribeGuess() {
   if (unsubscribeGuess) unsubscribeGuess();
   unsubscribeGuess = onSnapshot(guessesCol, (snap) => {
     allGuesses = snap.docs.map(d => d.data());
-    currentGuess = allGuesses.find(g => g.name === currentUser) || null;
-    renderGuess();
+    renderGuessForm();
     renderGuessCloud();
   }, (err) => console.error(err));
+}
+
+function fillGuessPeopleChips() {
+  const names = registerableNames(currentUser);
+  // Jos käyttäjä on yksin perheryhmässä (ei muita arvattavia), valitsin piiloon.
+  if (names.length <= 1) {
+    guessPeopleGroupEl.classList.add("hidden");
+    return;
+  }
+  guessPeopleGroupEl.classList.remove("hidden");
+  guessPeopleEl.innerHTML = names.map(n => {
+    const isSelf = n === currentUser;
+    const label = isSelf ? `${n.split(" ")[0]} (sinä)` : n.split(" ")[0];
+    const checked = n === selectedGuessPerson ? "checked" : "";
+    return `
+      <label class="chip">
+        <input type="radio" name="guess-person" value="${escapeHtml(n)}" ${checked} />
+        <span>${escapeHtml(label)}</span>
+      </label>
+    `;
+  }).join("");
+}
+
+guessPeopleEl?.addEventListener("change", (e) => {
+  if (e.target.name === "guess-person") {
+    selectedGuessPerson = e.target.value;
+    guessMsg.textContent = "";
+    renderGuessForm();
+    guessInput.focus();
+  }
+});
+
+function renderGuessForm() {
+  if (!selectedGuessPerson) return;
+  const personGuess = allGuesses.find(g => g.name === selectedGuessPerson);
+  const hasGuess = !!personGuess?.guess;
+  const isSelf = selectedGuessPerson === currentUser;
+
+  // Päivitä label valitun henkilön mukaan.
+  if (guessInputLabelEl) {
+    guessInputLabelEl.textContent = isSelf
+      ? "Oma arvaukseni"
+      : `${selectedGuessPerson.split(" ")[0]}n arvaus`;
+  }
+
+  // Täytä input olemassa olevalla arvauksella tai tyhjäksi.
+  guessInput.value = personGuess?.guess || "";
+  guessSubmitBtn.textContent = hasGuess ? "Tallenna muutokset" : "Tallenna arvaus";
+
+  // Pieni vihje jos henkilölle on jo arvaus tallennettuna.
+  if (guessExistingHintEl) {
+    if (hasGuess) {
+      guessExistingHintEl.textContent = isSelf
+        ? "Aiempi arvauksesi on yllä. Voit muokata sitä."
+        : `${selectedGuessPerson.split(" ")[0]}lle on jo tallennettu arvaus, voit muokata sitä.`;
+      guessExistingHintEl.classList.remove("hidden");
+    } else {
+      guessExistingHintEl.textContent = "";
+      guessExistingHintEl.classList.add("hidden");
+    }
+  }
 }
 
 function renderGuessCloud() {
@@ -576,49 +637,14 @@ function renderGuessCloud() {
   }).join("");
 }
 
-function renderGuess() {
-  const hasGuess = !!currentGuess?.guess;
-  if (hasGuess && !editingGuess) {
-    // Näytä tallennetun arvauksen näkymä, piilota lomake.
-    guessViewValueEl.textContent = currentGuess.guess;
-    guessViewEl.classList.remove("hidden");
-    guessForm.classList.add("hidden");
-    guessMsg.textContent = "";
-  } else {
-    // Näytä lomake. Täytä nykyinen arvaus jos muokataan, muuten tyhjä.
-    guessViewEl.classList.add("hidden");
-    guessForm.classList.remove("hidden");
-    if (editingGuess && hasGuess) {
-      guessInput.value = currentGuess.guess;
-      guessSubmitBtn.textContent = "Tallenna muutokset";
-      guessCancelBtn.classList.remove("hidden");
-    } else {
-      guessInput.value = "";
-      guessSubmitBtn.textContent = "Tallenna arvaus";
-      guessCancelBtn.classList.add("hidden");
-    }
-  }
-}
-
-guessEditBtn.addEventListener("click", () => {
-  editingGuess = true;
-  renderGuess();
-  guessInput.focus();
-});
-
-guessCancelBtn.addEventListener("click", () => {
-  editingGuess = false;
-  guessMsg.textContent = "";
-  renderGuess();
-});
-
 guessForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   guessMsg.textContent = "";
   guessMsg.style.color = "";
   const guess = guessInput.value.trim();
+  const target = selectedGuessPerson || currentUser;
   if (!guess) {
-    guessMsg.textContent = "Kirjoita arvauksesi.";
+    guessMsg.textContent = "Kirjoita arvaus.";
     guessMsg.style.color = "#a33a3a";
     return;
   }
@@ -626,13 +652,18 @@ guessForm.addEventListener("submit", async (e) => {
   const origLabel = guessSubmitBtn.textContent;
   guessSubmitBtn.textContent = "Tallennetaan…";
   try {
-    await setDoc(doc(guessesCol, currentUser), {
-      name: currentUser,
+    await setDoc(doc(guessesCol, target), {
+      name: target,
       guess,
+      submittedBy: currentUser,
       updatedAt: serverTimestamp()
     }, { merge: true });
-    editingGuess = false;
-    // renderGuess kutsutaan onSnapshotin kautta kun data päivittyy.
+    const isSelf = target === currentUser;
+    guessMsg.textContent = isSelf
+      ? "Arvaus tallennettu."
+      : `${target.split(" ")[0]}n arvaus tallennettu.`;
+    guessMsg.style.color = "";
+    // renderGuessForm kutsutaan onSnapshotin kautta kun data päivittyy.
   } catch (err) {
     console.error(err);
     guessMsg.textContent = "Arvauksen tallennus ei onnistunut.";
