@@ -1286,27 +1286,13 @@ select:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-rose-deep);
+  flex-shrink: 0;
 }
 
 .cal-btn-icon svg {
   width: 22px;
   height: 22px;
-  fill: none;
-  stroke: currentColor;
-}
-
-.cal-ics-link {
-  display: inline-block;
-  margin-top: 0.5rem;
-  font-size: 0.82rem;
-  color: var(--c-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.cal-ics-link:hover {
-  color: var(--c-rose-deep);
+  display: block;
 }
 
 /* Kapea mobiili: yksi chip per rivi, pienempi display-otsikko. */

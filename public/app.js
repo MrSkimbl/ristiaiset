@@ -663,14 +663,6 @@ function buildCalendarLinks() {
     `&details=${encodeURIComponent(EVENT_DATA.description)}` +
     `&location=${encodeURIComponent(EVENT_DATA.location)}`;
 
-  const outlookUrl =
-    "https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent" +
-    `&subject=${encodeURIComponent(EVENT_DATA.title)}` +
-    `&startdt=${encodeURIComponent(EVENT_DATA.startISO)}` +
-    `&enddt=${encodeURIComponent(EVENT_DATA.endISO)}` +
-    `&location=${encodeURIComponent(EVENT_DATA.location)}` +
-    `&body=${encodeURIComponent(EVENT_DATA.description)}`;
-
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -692,10 +684,11 @@ function buildCalendarLinks() {
 
   const gEl = document.getElementById("cal-google");
   const oEl = document.getElementById("cal-outlook");
-  const iEl = document.getElementById("cal-ics");
+  const aEl = document.getElementById("cal-apple");
   if (gEl) gEl.href = googleUrl;
-  if (oEl) oEl.href = outlookUrl;
-  if (iEl) iEl.href = icsUrl;
+  // Outlook ja Apple lataavat saman .ics-tiedoston: laajimmin yhteensopiva tapa.
+  if (oEl) oEl.href = icsUrl;
+  if (aEl) aEl.href = icsUrl;
 }
 buildCalendarLinks();
 
