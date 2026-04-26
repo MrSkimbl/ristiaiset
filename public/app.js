@@ -18,7 +18,7 @@ import { firebaseConfig } from "./firebase-config.js";
 //       kk→k / pp→p / tt→t, tai konsonanttiloppuinen joka tarvitsee +in).
 //       Muut palautuvat funktion oletukseen ("vokaali → +n").
 const PEOPLE = [
-  { name: "Aada Höynälä",          cat: 3, group: 16 },
+  { name: "Aada Höynälä",          cat: 2, group: 16 },
   { name: "Aliisa Janatuinen",     cat: 2, group: 15 },
   { name: "Amanda Kutuk",          cat: 1, group: 18, role: "Pikkuserkku" },
   { name: "Antti Korhonen",        cat: 3, group: 14, gen: "Antin" },
