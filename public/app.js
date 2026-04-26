@@ -633,6 +633,57 @@ guessForm.addEventListener("submit", async (e) => {
   }
 });
 
+// ---------- Kopioi tilinumero ----------
+const toastEl = document.getElementById("toast");
+let toastTimer = null;
+
+function showToast(message) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1800);
+}
+
+async function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (_) { /* fall through */ }
+  // Fallback vanhemmille selaimille / ei-secure-konteksteille.
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (_) {
+    return false;
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".copy-btn");
+  if (!btn) return;
+  const value = btn.dataset.copy;
+  if (!value) return;
+  const ok = await copyToClipboard(value);
+  if (ok) {
+    btn.classList.add("copied");
+    setTimeout(() => btn.classList.remove("copied"), 1200);
+    showToast("Kopioitu");
+  } else {
+    showToast("Kopiointi ei onnistunut");
+  }
+});
+
 function escapeHtml(s) {
   return String(s)
     .replaceAll("&", "&amp;")

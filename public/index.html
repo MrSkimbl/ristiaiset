@@ -82,6 +82,7 @@
           <h3>Juhlatilaisuus</h3>
           <p class="place">Lemettilän Tila</p>
           <p class="addr">Siltatie 23, 41900 Petäjävesi</p>
+          <p class="addr">Noin 300 m kirkolta.</p>
           <p class="note">Kokoonnumme tunnelmalliseen kivinavettaan maalaismaisemaan kasteen jälkeen. Tarjolla kahvia, pientä suolaista ja kakkua.</p>
           <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Siltatie+23+41900+Pet%C3%A4j%C3%A4vesi" target="_blank" rel="noopener">Avaa kartalla →</a>
         </div>
@@ -119,19 +120,39 @@
       <div class="accounts">
         <div class="account">
           <span class="account-name">Jami</span>
-          <span class="account-iban">FI00 0000 0000 0000 00</span>
+          <div class="account-iban-row">
+            <span class="account-iban">FI90 5290 0221 0800 86</span>
+            <button type="button" class="copy-btn" data-copy="FI90 5290 0221 0800 86" aria-label="Kopioi Jamin tilinumero">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+          </div>
         </div>
         <div class="account">
           <span class="account-name">Ellen</span>
-          <span class="account-iban">FI00 0000 0000 0000 00</span>
+          <div class="account-iban-row">
+            <span class="account-iban">FI03 5290 0221 0815 55</span>
+            <button type="button" class="copy-btn" data-copy="FI03 5290 0221 0815 55" aria-label="Kopioi Ellenin tilinumero">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+          </div>
         </div>
         <div class="account">
           <span class="account-name">Iivo</span>
-          <span class="account-iban">FI00 0000 0000 0000 00</span>
+          <div class="account-iban-row">
+            <span class="account-iban">FI47 5290 0221 0792 11</span>
+            <button type="button" class="copy-btn" data-copy="FI47 5290 0221 0792 11" aria-label="Kopioi Iivon tilinumero">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+          </div>
         </div>
         <div class="account">
-          <span class="account-name">Pienokainen</span>
-          <span class="account-iban">FI00 0000 0000 0000 00</span>
+          <span class="account-name">Pienokainen <span class="account-sub">(Heidin tili)</span></span>
+          <div class="account-iban-row">
+            <span class="account-iban">FI44 3939 0031 9093 28</span>
+            <button type="button" class="copy-btn" data-copy="FI44 3939 0031 9093 28" aria-label="Kopioi Pienokaisen tilinumero">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -231,12 +252,14 @@
       </div>
     </section>
 
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <footer class="site-footer">
       <div class="ornament-center" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 3 L24.2 15.8 L37 20 L24.2 24.2 L20 37 L15.8 24.2 L3 20 L15.8 15.8 Z"/></svg></div>
       <p>Kiitos, että jaatte kanssamme tämän päivän.</p>
     </footer>
   </main>
 
-  <script type="module" src="app.js?v=30"></script>
+  <script type="module" src="app.js?v=31"></script>
 </body>
 </html>
