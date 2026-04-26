@@ -1,7 +1,7 @@
 // Ristiäiset: login, RSVP (itse + pienet lapset), nimiarvaus, live-lista
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
-  getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot,
+  getFirestore, collection, doc, setDoc, deleteDoc, addDoc, onSnapshot,
   serverTimestamp, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -9,22 +9,25 @@ import { firebaseConfig } from "./firebase-config.js";
 
 // Kutsuttujen lista.
 // cat: 1 = pieni lapsi (ei kirjaudu itse, saman ryhmän aikuinen/lapsi ilmoittaa)
-//      2 = lapsi (kirjautuu itse)
+//      2 = lapsi (ilmoitetaan vanhemman/sisaruksen kautta, ei kirjaudu itse)
 //      3 = aikuinen (kirjautuu itse)
 // group = perheryhmä. Ei näy missään UI:ssa, käytetään vain jotta vanhemmat
-// saavat oman ryhmänsä cat 1 -lapset chip-valintoihin.
-// Rooli = suhde Mustikkaan (päätähti). Puolisot ja niin edelleen jäävät ilman roolia.
+// saavat oman ryhmänsä jäsenet chip-valintoihin.
+// role = suhde Mustikkaan (päätähti). Puolisot ja niin edelleen jäävät ilman roolia.
+// gen = etunimen genitiivi (vain jos heuristiikka epäonnistuu: astevaihtelu
+//       kk→k / pp→p / tt→t, tai konsonanttiloppuinen joka tarvitsee +in).
+//       Muut palautuvat funktion oletukseen ("vokaali → +n").
 const PEOPLE = [
   { name: "Aada Höynälä",          cat: 3, group: 16 },
   { name: "Aliisa Janatuinen",     cat: 2, group: 15 },
   { name: "Amanda Kutuk",          cat: 1, group: 18, role: "Pikkuserkku" },
-  { name: "Antti Korhonen",        cat: 3, group: 14 },
-  { name: "Ari-Pekka Salonen",     cat: 3, group: 19 },
+  { name: "Antti Korhonen",        cat: 3, group: 14, gen: "Antin" },
+  { name: "Ari-Pekka Salonen",     cat: 3, group: 19, gen: "Ari-Pekan" },
   { name: "Eija Luoto",            cat: 3, group: 20 },
-  { name: "Eliel Luoto",           cat: 1, group: 3,  role: "Serkku" },
+  { name: "Eliel Luoto",           cat: 1, group: 3,  role: "Serkku", gen: "Elielin" },
   { name: "Elina Tähkiö",          cat: 3, group: 19 },
   { name: "Elisa Jokela",          cat: 3, group: 9,  role: "Jamin kummi" },
-  { name: "Ellen Louhelainen",     cat: 2, group: 0,  role: "Sisko" },
+  { name: "Ellen Louhelainen",     cat: 2, group: 0,  role: "Sisko", gen: "Ellenin" },
   { name: "Elsi Jaakonvaara",      cat: 1, group: 13 },
   { name: "Emma Martikainen",      cat: 3, group: 7 },
   { name: "Emmi Juntunen",         cat: 3, group: 15 },
@@ -42,56 +45,68 @@ const PEOPLE = [
   { name: "Jenni Partinen",        cat: 3, group: 2 },
   { name: "Jenni Virtanen",        cat: 3, group: 10, role: "Ellenin kummi" },
   { name: "Johanna Tähkiö",        cat: 3, group: 6,  role: "Mummo" },
-  { name: "Jukka Ohtonen",         cat: 3, group: 9,  role: "Jamin kummi" },
-  { name: "Kerttu Valkonen",       cat: 3, group: 11, role: "Jamin kummi" },
+  { name: "Jukka Ohtonen",         cat: 3, group: 9,  role: "Jamin kummi", gen: "Jukan" },
+  { name: "Kerttu Valkonen",       cat: 3, group: 11, role: "Jamin kummi", gen: "Kertun" },
   { name: "Kimmo Louhelainen",     cat: 3, group: 0,  role: "Isä" },
   { name: "Leena Airaksinen",      cat: 2, group: 11 },
   { name: "Maija Kurki",           cat: 3, group: 13 },
   { name: "Maire Luoto",           cat: 3, group: 1,  role: "Mummi" },
   { name: "Mari Moisio",           cat: 3, group: 14 },
-  { name: "Martti Louhelainen",    cat: 3, group: 6,  role: "Ukki" },
-  { name: "Matti Luoto",           cat: 3, group: 2,  role: "Eno" },
+  { name: "Martti Louhelainen",    cat: 3, group: 6,  role: "Ukki", gen: "Martin" },
+  { name: "Matti Luoto",           cat: 3, group: 2,  role: "Eno", gen: "Matin" },
   { name: "Meme Kutuk",            cat: 3, group: 18 },
   { name: "Miisa Jaakonvaara",     cat: 2, group: 13 },
-  { name: "Mikko Luoto",           cat: 3, group: 3,  role: "Eno" },
+  { name: "Mikko Luoto",           cat: 3, group: 3,  role: "Eno", gen: "Mikon" },
   { name: "Mila Kutuk",            cat: 2, group: 18, role: "Pikkuserkku" },
   { name: "Milla Nevanpää",        cat: 2, group: 14 },
-  { name: "Mustikka Louhelainen",  cat: 1, group: 0,  role: "Päätähti" },
+  { name: "Mustikka Louhelainen",  cat: 1, group: 0,  role: "Päätähti", gen: "Mustikan" },
   { name: "Neela Ax",              cat: 2, group: 8,  role: "Serkku" },
   { name: "Nelli Nevanpää",        cat: 2, group: 14 },
   { name: "Oiva Ax",               cat: 2, group: 8,  role: "Serkku" },
-  { name: "Oliver Brouk",          cat: 2, group: 10 },
+  { name: "Oliver Brouk",          cat: 2, group: 10, gen: "Oliverin" },
   { name: "Olivia Brouk",          cat: 2, group: 10 },
   { name: "Olli Patrakka",         cat: 3, group: 4 },
-  { name: "Olli-Pekka Höynälä",    cat: 3, group: 16 },
+  { name: "Olli-Pekka Höynälä",    cat: 3, group: 16, gen: "Olli-Pekan" },
   { name: "Onni Korhonen",         cat: 1, group: 14 },
   { name: "Pete Luoto",            cat: 3, group: 20 },
   { name: "Petra Salonen",         cat: 3, group: 18 },
   { name: "Pia Ax",                cat: 3, group: 17 },
   { name: "Päivi Karvala",         cat: 3, group: 12, role: "Iivon kummi" },
   { name: "Sanna Ax",              cat: 3, group: 8,  role: "Täti" },
-  { name: "Seppo Tähkiö",          cat: 3, group: 6,  role: "Isoukki" },
+  { name: "Seppo Tähkiö",          cat: 3, group: 6,  role: "Isoukki", gen: "Sepon" },
   { name: "Tero Airaksinen",       cat: 3, group: 11, role: "Jamin kummi" },
   { name: "Timi Airaksinen",       cat: 2, group: 11 },
   { name: "Tomi Brouk",            cat: 3, group: 10, role: "Ellenin kummi" },
   { name: "Tuomo Janatuinen",      cat: 3, group: 15 },
-  { name: "Tuukka Airaksinen",     cat: 2, group: 11 },
+  { name: "Tuukka Airaksinen",     cat: 2, group: 11, gen: "Tuukan" },
   { name: "Vauva Janatuinen",      cat: 1, group: 15 },
   { name: "Vesa Luoto",            cat: 3, group: 1,  role: "Vaari" },
   { name: "Viola Brouk",           cat: 2, group: 10 },
-  { name: "Vivian Wilen",          cat: 2, group: 5,  role: "Serkku" },
-  { name: "William Wilen",         cat: 1, group: 5,  role: "Serkku" },
+  { name: "Vivian Wilen",          cat: 2, group: 5,  role: "Serkku", gen: "Vivianin" },
+  { name: "William Wilen",         cat: 1, group: 5,  role: "Serkku", gen: "Williamin" },
 ];
 
 function personByName(name) { return PEOPLE.find(p => p.name === name); }
 function catOf(name)   { return personByName(name)?.cat   ?? 0; }
 function groupOf(name) { return personByName(name)?.group ?? -1; }
 function roleOf(name)  { return personByName(name)?.role  ?? ""; }
+function firstNameOf(name) { return String(name || "").split(" ")[0]; }
 
-// Login-dropdown: cat 2 ja 3, aakkosjärjestyksessä.
+// Etunimen genitiivi. Käyttää ensin PEOPLE-listan gen-kenttää (jos asetettu),
+// muuten heuristiikkaa: vokaaliloppuiset +n, konsonanttiloppuiset +in.
+function genitiveOf(fullName) {
+  const p = personByName(fullName);
+  if (p?.gen) return p.gen;
+  const fn = firstNameOf(fullName);
+  if (!fn) return "";
+  return /[aeiouyäö]$/i.test(fn) ? fn + "n" : fn + "in";
+}
+
+// Login-dropdown: vain aikuiset (cat 3), aakkosjärjestyksessä.
+// Lapset (cat 1 ja 2) ilmoitetaan vanhempansa kautta perheryhmän chip-valinnoilla.
 function loginCandidates() {
   return PEOPLE
-    .filter(p => p.cat >= 2)
+    .filter(p => p.cat >= 3)
     .sort((a, b) => a.name.localeCompare(b.name, "fi"));
 }
 
@@ -127,6 +142,26 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const rsvpsCol = collection(db, "rsvps");
 const guessesCol = collection(db, "guesses");
+const auditCol = collection(db, "audit");
+
+// Audit-loki: jokainen kirjoitus rsvps/guesses-kokoelmiin tallennetaan lisäksi
+// audit-kokoelmaan, jotta historia voidaan tarvittaessa palauttaa (esim. jos
+// joku alkaa spämmätä tai pyyhkii vastauksia). Säännöt sallivat vain create:n
+// clientiltä, ei luku/muokkaus/poistoa.
+async function logAudit(action, target, payload) {
+  try {
+    await addDoc(auditCol, {
+      ts: serverTimestamp(),
+      action: String(action || ""),
+      target: String(target || ""),
+      by: String(currentUser || "(unknown)"),
+      payload: payload || {}
+    });
+  } catch (err) {
+    // Älä rikota käyttäjäpolkua jos audit epäonnistuu.
+    console.warn("Audit-loki epäonnistui:", action, target, err);
+  }
+}
 
 // ---------- DOM refs ----------
 const loginView = document.getElementById("login-view");
@@ -384,7 +419,7 @@ rsvpForm.addEventListener("submit", async (e) => {
   rsvpSubmitBtn.textContent = "Tallennetaan…";
 
   try {
-    await Promise.all(people.map(person => {
+    const writes = people.map(async (person) => {
       const existing = currentRsvps.find(r => r.name === person);
       const submittedBy = editingName && existing
         ? (existing.submittedBy || currentUser)
@@ -406,11 +441,20 @@ rsvpForm.addEventListener("submit", async (e) => {
         lastEditedBy: currentUser,
         updatedAt: serverTimestamp()
       };
-      return setDoc(doc(rsvpsCol, person), payload, { merge: true });
-    }));
+      await setDoc(doc(rsvpsCol, person), payload, { merge: true });
+      // Tallenna sama tieto audit-lokiin (ilman serverTimestamp-merkkiä).
+      logAudit("rsvp_save", person, {
+        attending: payload.attending,
+        nights: payload.nights,
+        notes: payload.notes,
+        submittedBy: payload.submittedBy,
+        lastEditedBy: payload.lastEditedBy
+      });
+    });
+    await Promise.all(writes);
 
     rsvpMsg.textContent = editingName
-      ? `${editingName}n tiedot päivitetty.`
+      ? `${genitiveOf(editingName)} tiedot päivitetty.`
       : (people.length === 1
           ? `Kiitos! ${people[0]} on ilmoitettu.`
           : `Kiitos! ${people.length} henkilöä ilmoitettu (${people.join(", ")}).`);
@@ -431,10 +475,11 @@ rsvpForm.addEventListener("submit", async (e) => {
 
 // ---------- Delete ----------
 async function handleDelete(name) {
-  const ok = confirm(`Poistetaanko ${name}n ilmoittautuminen?`);
+  const ok = confirm(`Poistetaanko ${genitiveOf(name)} ilmoittautuminen?`);
   if (!ok) return;
   try {
     await deleteDoc(doc(rsvpsCol, name));
+    logAudit("rsvp_delete", name, {});
     if (editingName === name) resetFormToDefault();
   } catch (err) {
     console.error(err);
@@ -591,24 +636,22 @@ function renderGuessForm() {
   const personGuess = allGuesses.find(g => g.name === selectedGuessPerson);
   const hasGuess = !!personGuess?.guess;
   const isSelf = selectedGuessPerson === currentUser;
+  const gen = genitiveOf(selectedGuessPerson);
 
-  // Päivitä label valitun henkilön mukaan.
   if (guessInputLabelEl) {
     guessInputLabelEl.textContent = isSelf
       ? "Oma arvaukseni"
-      : `${selectedGuessPerson.split(" ")[0]}n arvaus`;
+      : `${gen} arvaus`;
   }
 
-  // Täytä input olemassa olevalla arvauksella tai tyhjäksi.
   guessInput.value = personGuess?.guess || "";
   guessSubmitBtn.textContent = hasGuess ? "Tallenna muutokset" : "Tallenna arvaus";
 
-  // Pieni vihje jos henkilölle on jo arvaus tallennettuna.
   if (guessExistingHintEl) {
     if (hasGuess) {
       guessExistingHintEl.textContent = isSelf
         ? "Aiempi arvauksesi on yllä. Voit muokata sitä."
-        : `${selectedGuessPerson.split(" ")[0]}lle on jo tallennettu arvaus, voit muokata sitä.`;
+        : `${gen} aiempi arvaus on yllä, voit muokata sitä.`;
       guessExistingHintEl.classList.remove("hidden");
     } else {
       guessExistingHintEl.textContent = "";
@@ -658,10 +701,11 @@ guessForm.addEventListener("submit", async (e) => {
       submittedBy: currentUser,
       updatedAt: serverTimestamp()
     }, { merge: true });
+    logAudit("guess_save", target, { guess, submittedBy: currentUser });
     const isSelf = target === currentUser;
     guessMsg.textContent = isSelf
       ? "Arvaus tallennettu."
-      : `${target.split(" ")[0]}n arvaus tallennettu.`;
+      : `${genitiveOf(target)} arvaus tallennettu.`;
     guessMsg.style.color = "";
     // renderGuessForm kutsutaan onSnapshotin kautta kun data päivittyy.
   } catch (err) {
@@ -867,6 +911,6 @@ function escapeHtml(s) {
 
 // ---------- Auto-login on load ----------
 const existing = getSession();
-if (existing && PEOPLE.some(p => p.name === existing && p.cat >= 2)) {
+if (existing && PEOPLE.some(p => p.name === existing && p.cat >= 3)) {
   enterApp(existing);
 }

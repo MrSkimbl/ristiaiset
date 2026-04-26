@@ -47,6 +47,22 @@ service cloud.firestore {
       allow delete: if allowedName(name);
     }
 
+    // Audit-loki: append-only. Clientti voi vain lisätä uusia rivejä — ei lukea,
+    // muokata tai poistaa. Admin näkee lokin Firebase Consolen kautta (säännöt
+    // eivät rajoita admin SDK:ta). Käytetään historian palauttamiseen jos joku
+    // alkaa spämmätä tai tahallaan tuhoaa vastauksia.
+    match /audit/{id} {
+      allow create: if
+        request.resource.data.action is string
+        && request.resource.data.action.size() < 50
+        && request.resource.data.target is string
+        && request.resource.data.target.size() < 100
+        && request.resource.data.by is string
+        && request.resource.data.by.size() < 100
+        && request.resource.data.payload is map;
+      allow read, update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
