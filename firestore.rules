@@ -8,7 +8,7 @@ service cloud.firestore {
         'Aada Höynälä', 'Aliisa Janatuinen', 'Amanda Kutuk', 'Antti Korhonen',
         'Ari-Pekka Salonen', 'Eija Luoto', 'Eliel Luoto', 'Elina Tähkiö',
         'Elisa Jokela', 'Ellen Louhelainen', 'Elsi Jaakonvaara', 'Emma Martikainen',
-        'Emmi Juntunen', 'Essi Rehel', 'Hanna-Sofia Luoto', 'Harri Jaakonvaara',
+        'Emmi Juntunen', 'Essi Rehell', 'Hanna-Sofia Luoto', 'Harri Jaakonvaara',
         'Heidi Louhelainen', 'Heli Luoto', 'Hely Tähkiö', 'Henry Wilen',
         'Iivo Louhelainen', 'Jami Louhelainen', 'Janne Louhelainen', 'Jarmo Kakkonen',
         'Jenni Partinen', 'Jenni Virtanen', 'Johanna Tähkiö', 'Jukka Ohtonen',

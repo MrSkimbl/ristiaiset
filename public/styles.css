@@ -1217,6 +1217,84 @@ select:disabled {
   margin-top: 0.4rem;
 }
 
+.modal-edit-hint {
+  font-size: 0.82rem;
+  color: var(--c-muted);
+  margin: 1rem 0 0;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* ===== Calendar section ===== */
+
+.calendar-section {
+  text-align: center;
+}
+
+.calendar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  max-width: 460px;
+  margin: 1.25rem auto 0.75rem;
+}
+
+.cal-btn {
+  flex: 1 1 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.1rem;
+  background: #fffbf7;
+  border: 1px solid var(--c-line);
+  border-radius: 12px;
+  color: var(--c-plum);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.cal-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--c-rose);
+  color: var(--c-rose-deep);
+  box-shadow: 0 4px 14px rgba(182, 120, 115, 0.14);
+}
+
+.cal-btn-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-rose-deep);
+}
+
+.cal-btn-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+}
+
+.cal-ics-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--c-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cal-ics-link:hover {
+  color: var(--c-rose-deep);
+}
+
 /* Kapea mobiili: yksi chip per rivi, pienempi display-otsikko. */
 @media (max-width: 380px) {
   .login-card { padding: 2.25rem 1.35rem 1.75rem; }

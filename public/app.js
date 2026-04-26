@@ -28,7 +28,7 @@ const PEOPLE = [
   { name: "Elsi Jaakonvaara",      cat: 1, group: 13 },
   { name: "Emma Martikainen",      cat: 3, group: 7 },
   { name: "Emmi Juntunen",         cat: 3, group: 15 },
-  { name: "Essi Rehel",            cat: 3, group: 3 },
+  { name: "Essi Rehell",           cat: 3, group: 3 },
   { name: "Hanna-Sofia Luoto",     cat: 3, group: 4,  role: "Täti" },
   { name: "Harri Jaakonvaara",     cat: 3, group: 13, role: "Iivon kummi" },
   { name: "Heidi Louhelainen",     cat: 3, group: 0,  role: "Äiti" },
@@ -389,11 +389,18 @@ rsvpForm.addEventListener("submit", async (e) => {
         ? (existing.submittedBy || currentUser)
         : currentUser;
 
+      // Terveiset/huomiot ovat henkilökohtaisia: ne tallennetaan vain ilmoittajalle
+      // itselleen (tai muokkaustilassa muokattavalle henkilölle), ei muille saman
+      // perheen jäsenille.
+      const personalNotes = editingName
+        ? (person === editingName ? notes : (existing?.notes || ""))
+        : (person === currentUser ? notes : (existing?.notes || ""));
+
       const payload = {
         name: person,
         attending,
         nights: attendingAllowsOvernight(attending) ? nights : [],
-        notes,
+        notes: personalNotes,
         submittedBy,
         lastEditedBy: currentUser,
         updatedAt: serverTimestamp()
@@ -407,9 +414,10 @@ rsvpForm.addEventListener("submit", async (e) => {
           ? `Kiitos! ${people[0]} on ilmoitettu.`
           : `Kiitos! ${people.length} henkilöä ilmoitettu (${people.join(", ")}).`);
     rsvpMsg.style.color = "";
-    const wasComing = attending === "yes";
+    const submittedAttending = attending;
+    const wasEdit = !!editingName;
     resetFormToDefault();
-    if (wasComing) showWelcomeModal();
+    if (!wasEdit) showWelcomeModal(submittedAttending);
   } catch (err) {
     console.error(err);
     rsvpMsg.textContent = "Jokin meni pieleen. Yritä uudelleen.";
@@ -635,11 +643,103 @@ guessForm.addEventListener("submit", async (e) => {
   }
 });
 
+// ---------- Kalenterikutsut ----------
+const EVENT_DATA = {
+  title: "Mustikan ristiäiset & kesäjuhlat",
+  startLocal: "20260724T140000",
+  endLocal:   "20260724T220000",
+  startISO:   "2026-07-24T14:00:00+03:00",
+  endISO:     "2026-07-24T22:00:00+03:00",
+  location:   "Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi",
+  description: "Klo 14.00–14.30 ristiäiset Petäjäveden vanhassa kirkossa.\nKlo 14.30–16.30 juhlatilaisuus Lemettilän Tilalla, Siltatie 23, 41900 Petäjävesi.\nIllalla kesäjuhlat Kuohulla, Joensuunmutka 40, 41930 Kuohu."
+};
+
+function buildCalendarLinks() {
+  const googleUrl =
+    "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+    `&text=${encodeURIComponent(EVENT_DATA.title)}` +
+    `&dates=${EVENT_DATA.startLocal}/${EVENT_DATA.endLocal}` +
+    `&ctz=Europe/Helsinki` +
+    `&details=${encodeURIComponent(EVENT_DATA.description)}` +
+    `&location=${encodeURIComponent(EVENT_DATA.location)}`;
+
+  const outlookUrl =
+    "https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent" +
+    `&subject=${encodeURIComponent(EVENT_DATA.title)}` +
+    `&startdt=${encodeURIComponent(EVENT_DATA.startISO)}` +
+    `&enddt=${encodeURIComponent(EVENT_DATA.endISO)}` +
+    `&location=${encodeURIComponent(EVENT_DATA.location)}` +
+    `&body=${encodeURIComponent(EVENT_DATA.description)}`;
+
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Mustikan ristiaiset//FI",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    "UID:mustikan-ristiaiset-2026-07-24@louhelainen.fi",
+    "DTSTAMP:20260101T000000Z",
+    "DTSTART;TZID=Europe/Helsinki:" + EVENT_DATA.startLocal,
+    "DTEND;TZID=Europe/Helsinki:" + EVENT_DATA.endLocal,
+    "SUMMARY:" + EVENT_DATA.title,
+    "LOCATION:" + EVENT_DATA.location,
+    "DESCRIPTION:" + EVENT_DATA.description.replace(/\n/g, "\\n"),
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+  const icsUrl = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+
+  const gEl = document.getElementById("cal-google");
+  const oEl = document.getElementById("cal-outlook");
+  const iEl = document.getElementById("cal-ics");
+  if (gEl) gEl.href = googleUrl;
+  if (oEl) oEl.href = outlookUrl;
+  if (iEl) iEl.href = icsUrl;
+}
+buildCalendarLinks();
+
 // ---------- Tervetuloa-modal ilmoittautumisen jälkeen ----------
 const welcomeModal = document.getElementById("welcome-modal");
+const welcomeModalTitle = document.getElementById("welcome-modal-title");
+const welcomeModalLede = document.getElementById("welcome-modal-lede");
+const welcomeModalText = document.getElementById("welcome-modal-text");
+const welcomeModalWaTitle = document.getElementById("welcome-modal-wa-title");
+const welcomeModalWaSub = document.getElementById("welcome-modal-wa-sub");
 
-function showWelcomeModal() {
+const MODAL_CONTENT = {
+  yes: {
+    title: "Kiitos ilmoittautumisesta!",
+    lede:  "Ihana, että pääset juhlimaan kanssamme.",
+    text:  "Liity vielä juhlien WhatsApp-ryhmään, niin pysyt mukana viestien ja kuvien tahdissa.",
+    waTitle: "Tule WhatsApp-ryhmään",
+    waSub:   "Kuvia, kuulumisia ja viestejä juhlista"
+  },
+  maybe: {
+    title: "Kiitos vastauksesta!",
+    lede:  "Toivottavasti pääset paikalle.",
+    text:  "Voit päivittää tiedot myöhemmin samasta lomakkeesta tai ilmoittautuneiden listalta. Liity ihmeessä jo WhatsApp-ryhmään, niin pysyt mukana kuulumisissa.",
+    waTitle: "Tule WhatsApp-ryhmään",
+    waSub:   "Kuulumisia ja kuvia juhlapäivän tunnelmista"
+  },
+  no: {
+    title: "Harmi, että et pääse",
+    lede:  "Kiitos, että kerroit. Jäämme kaipaamaan sinua.",
+    text:  "Voit silti liittyä WhatsApp-ryhmään, jos haluat nähdä juhlista kuvia ja kuulumisia.",
+    waTitle: "Liity WhatsApp-ryhmään",
+    waSub:   "Näe kuvat ja kuulumiset juhlista jälkikäteen"
+  }
+};
+
+function showWelcomeModal(attending) {
   if (!welcomeModal) return;
+  const c = MODAL_CONTENT[attending] || MODAL_CONTENT.yes;
+  if (welcomeModalTitle)   welcomeModalTitle.textContent = c.title;
+  if (welcomeModalLede)    welcomeModalLede.textContent = c.lede;
+  if (welcomeModalText)    welcomeModalText.textContent = c.text;
+  if (welcomeModalWaTitle) welcomeModalWaTitle.textContent = c.waTitle;
+  if (welcomeModalWaSub)   welcomeModalWaSub.textContent = c.waSub;
+
   welcomeModal.classList.remove("hidden");
   // Pieni viive jotta CSS-transition käynnistyy.
   requestAnimationFrame(() => welcomeModal.classList.add("show"));
