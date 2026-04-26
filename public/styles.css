@@ -1225,10 +1225,24 @@ select:disabled {
   line-height: 1.45;
 }
 
-/* ===== Calendar section ===== */
+/* ===== Stay-tuned section (WhatsApp + kalenteri) ===== */
 
-.calendar-section {
+.stay-tuned-section {
   text-align: center;
+}
+
+.calendar-block {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--c-line);
+}
+
+.calendar-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--c-rose-deep);
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
 }
 
 .calendar-buttons {
