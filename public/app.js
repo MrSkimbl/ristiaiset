@@ -407,7 +407,9 @@ rsvpForm.addEventListener("submit", async (e) => {
           ? `Kiitos! ${people[0]} on ilmoitettu.`
           : `Kiitos! ${people.length} henkilöä ilmoitettu (${people.join(", ")}).`);
     rsvpMsg.style.color = "";
+    const wasComing = attending === "yes";
     resetFormToDefault();
+    if (wasComing) showWelcomeModal();
   } catch (err) {
     console.error(err);
     rsvpMsg.textContent = "Jokin meni pieleen. Yritä uudelleen.";
@@ -632,6 +634,35 @@ guessForm.addEventListener("submit", async (e) => {
     guessSubmitBtn.disabled = false;
   }
 });
+
+// ---------- Tervetuloa-modal ilmoittautumisen jälkeen ----------
+const welcomeModal = document.getElementById("welcome-modal");
+
+function showWelcomeModal() {
+  if (!welcomeModal) return;
+  welcomeModal.classList.remove("hidden");
+  // Pieni viive jotta CSS-transition käynnistyy.
+  requestAnimationFrame(() => welcomeModal.classList.add("show"));
+  document.body.style.overflow = "hidden";
+}
+
+function hideWelcomeModal() {
+  if (!welcomeModal) return;
+  welcomeModal.classList.remove("show");
+  document.body.style.overflow = "";
+  setTimeout(() => welcomeModal.classList.add("hidden"), 220);
+}
+
+if (welcomeModal) {
+  welcomeModal.addEventListener("click", (e) => {
+    if (e.target.closest("[data-close]")) hideWelcomeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && welcomeModal.classList.contains("show")) {
+      hideWelcomeModal();
+    }
+  });
+}
 
 // ---------- Kopioi tilinumero ----------
 const toastEl = document.getElementById("toast");
