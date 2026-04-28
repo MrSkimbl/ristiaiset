@@ -1237,6 +1237,15 @@ select:disabled {
   border-top: 1px dashed var(--c-line);
 }
 
+.modal-calendar-block {
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.modal-calendar-block .calendar-buttons {
+  margin-top: 0.7rem;
+}
+
 .calendar-label {
   font-family: var(--font-display);
   font-style: italic;

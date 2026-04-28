@@ -12,7 +12,7 @@ Yksityinen staattinen juhlasivusto, jossa kutsutut voivat kirjautua yksinkertais
 
 - **Frontend:** puhdas HTML + CSS + ES-moduuli-JS. Ei rakennusvaihetta.
 - **Hosting:** Firebase Hosting (`public/` -kansio juurena).
-- **Tietokanta:** Firestore (yksi kokoelma `rsvps`).
+- **Tietokanta:** Firestore. Kolme kokoelmaa: `rsvps` (ilmoittautumiset), `guesses` (Mustikan nimiarvaukset) ja `audit` (append-only kirjoitusloki, vain admin lukee).
 - **Autentikointi:** ei autentikointia. Kirjautuminen on pelkkä nimen valinta dropdownista — turva luotu Firestore-säännöissä (whitelist + datan muoto) ja sen varassa, että URL on yksityinen.
 - **Fontit:** Google Fonts (Cormorant Garamond + Inter).
 - **Kuvat:** embed Wikimedia Commons (Petäjäveden vanha kirkko).
@@ -55,12 +55,15 @@ Seuraa näitä kun teet muutoksia — nämä on sovittu käyttäjän (Kimmo) kan
    - Lajittelu listassa ja login-dropdownissa: aikuiset (cat 3) ensin, sitten lapset (cat 2), RSVP-listassa myös cat 1 -lapset perässä; nimi aakkosjärjestyksessä kategorian sisällä.
 5. **Nimiarvaus** (`guesses`-kokoelma):
    - Oma osio ja lomake, näkyy ennen RSVP:tä kirjautumisen jälkeen.
-   - Vapaamuotoinen teksti, yksi arvaus per kirjautuva henkilö, muokattavissa milloin tahansa.
-   - Arvaus peilataan myös RSVP-dokumentin `nameGuess`-kenttään, jotta se näkyy RSVP-listassa julkisesti.
-6. **Firestore-säännöt**: dokumentin ID:n oltava yksi 66 whitelistatusta nimestä (`allowedName` `firestore.rules`:ssä). Sisällön muoto validoidaan (`rsvps` + `guesses`). Muita kokoelmia ei sallita.
-7. **Kuohun osoite:** Joensuunmutka 40, 41930 Kuohu.
-8. **Kirkko:** Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi, klo 14.
-9. **Muistaminen-osio:** tilinumerot placeholder-muodossa (`FI00 0000 0000 0000 00`). Oikeat IBANit käyttäjän päätettävissä.
+   - Vapaamuotoinen teksti, yksi arvaus per henkilö, muokattavissa milloin tahansa.
+   - Saman perheryhmän jäsenet voivat tallentaa arvauksen toistensa puolesta (radio-chip valitsee kohteen).
+   - Muiden arvaukset näkyvät kuplina lomakkeen alla.
+6. **Audit-loki** (`audit`-kokoelma): jokainen RSVP- ja guess-kirjoitus tallennetaan myös tänne. Append-only sääntöjen tasolla — clientti ei voi lukea, muokata eikä poistaa. Käytetään historian palauttamiseen jos joku alkaa spämmätä tai pyyhkiä vastauksia.
+7. **Tervetuloa-modaali:** ilmoittautumisen jälkeen avautuu pop-up, jonka sisältö vaihtelee vastauksen mukaan (`yes` / `maybe` / `no`). Sisältää WhatsApp-ryhmän linkin ja `yes`/`maybe`-vastauksissa myös kalenterikutsunappulat (Google Kalenteri + .ics Outlookiin/Appleen/muuhun).
+8. **Firestore-säännöt**: dokumentin ID:n oltava yksi 66 whitelistatusta nimestä (`allowedName` `firestore.rules`:ssä). Sisällön muoto validoidaan (`rsvps` + `guesses`). `audit` on create-only. Muita kokoelmia ei sallita.
+9. **Kuohun osoite:** Joensuunmutka 40, 41930 Kuohu.
+10. **Kirkko:** Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi, klo 14.
+11. **Muistaminen-osio:** tilinumerot oikeissa muodoissaan (Jami, Ellen, Iivo, Mustikka/Heidin tili). Päivitettävissä `index.html`:n `.accounts`-blokista.
 
 ---
 
@@ -156,10 +159,11 @@ Hero-kuva on CSS-taustakuva: `public/styles.css` → `.hero { background: url('.
 - **Firestore-säännöt** (`firestore.rules`) rajoittavat asiakaskirjoitukset:
   - Dokumentin ID:n on oltava yksi 66 whitelistatusta nimestä (`allowedName`-funktio).
   - `request.resource.data.name` on vastattava doc-ID:tä (estää spoofingin).
-  - `attending ∈ {yes, maybe, no}`, `notes < 500`, `nameGuess < 100` merkkiä.
+  - `attending ∈ {yes, maybe, no}`, `notes < 500`, `guess < 100` merkkiä.
+  - `audit`-kokoelma: vain create. Ei luku-, muokkaus- eikä poisto-oikeutta clientille.
   - Muita kokoelmia ei sallita.
 - Käytännössä: devtoolsin kautta ei pääse luomaan roskarivejä — vain olemassa olevien vieraiden rivejä voi muokata.
-- Kotiosoite (Joensuunmutka 40) ja juhla-aika (24.7.2026) näkyvät kirjautumisen jälkeen. Jos URL + salasana vuotaa, huomioi että poissaolopäivä kotoa on potentiaalinen riski.
+- Kotiosoite (Joensuunmutka 40) ja juhla-aika (24.7.2026) näkyvät kirjautumisen jälkeen. Jos URL vuotaa, huomioi että poissaolopäivä kotoa on potentiaalinen riski.
 
 ---
 
@@ -169,8 +173,9 @@ Hero-kuva on CSS-taustakuva: `public/styles.css` → `.hero { background: url('.
 - ✅ Web-sovellus rekisteröity
 - ✅ Firestore aktivoitu (EU-multi-region `eur3`)
 - ✅ Hosting + rules deployattu
-- ⏳ **Tilinumerot** täytyy vaihtaa placeholderista oikeiksi
+- ✅ Tilinumerot oikeat (Jami, Ellen, Iivo, Mustikka/Heidin tili)
 - ✅ **Kutsulista (`PEOPLE`)** täytetty CSV:n mukaan (66 henkilöä, 21 perheryhmää)
+- ✅ Audit-loki + WhatsApp- ja kalenterilinkit ilmoittautumismodaalissa
 
 ---
 

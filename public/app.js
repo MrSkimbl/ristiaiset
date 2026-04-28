@@ -38,6 +38,7 @@ const PEOPLE = [
   { name: "Heli Luoto",            cat: 3, group: 5,  role: "Täti" },
   { name: "Hely Tähkiö",           cat: 3, group: 6,  role: "Isoisotäti" },
   { name: "Henry Wilen",           cat: 3, group: 5 },
+  { name: "Hilma Janatuinen",      cat: 1, group: 15 },
   { name: "Iivo Louhelainen",      cat: 2, group: 0,  role: "Veli" },
   { name: "Jami Louhelainen",      cat: 2, group: 0,  role: "Veli" },
   { name: "Janne Louhelainen",     cat: 3, group: 7,  role: "Setä" },
@@ -79,7 +80,6 @@ const PEOPLE = [
   { name: "Tomi Brouk",            cat: 3, group: 10, role: "Ellenin kummi" },
   { name: "Tuomo Janatuinen",      cat: 3, group: 15 },
   { name: "Tuukka Airaksinen",     cat: 2, group: 11, gen: "Tuukan" },
-  { name: "Vauva Janatuinen",      cat: 1, group: 15 },
   { name: "Vesa Luoto",            cat: 3, group: 1,  role: "Vaari" },
   { name: "Viola Brouk",           cat: 2, group: 10 },
   { name: "Vivian Wilen",          cat: 2, group: 5,  role: "Serkku", gen: "Vivianin" },
@@ -788,10 +788,14 @@ function buildCalendarLinks() {
   ].join("\r\n");
   const icsUrl = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 
-  const gEl = document.getElementById("cal-google");
-  const iEl = document.getElementById("cal-ics");
-  if (gEl) gEl.href = googleUrl;
-  if (iEl) iEl.href = icsUrl;
+  for (const id of ["cal-google", "modal-cal-google"]) {
+    const el = document.getElementById(id);
+    if (el) el.href = googleUrl;
+  }
+  for (const id of ["cal-ics", "modal-cal-ics"]) {
+    const el = document.getElementById(id);
+    if (el) el.href = icsUrl;
+  }
 }
 buildCalendarLinks();
 
@@ -802,28 +806,32 @@ const welcomeModalLede = document.getElementById("welcome-modal-lede");
 const welcomeModalText = document.getElementById("welcome-modal-text");
 const welcomeModalWaTitle = document.getElementById("welcome-modal-wa-title");
 const welcomeModalWaSub = document.getElementById("welcome-modal-wa-sub");
+const welcomeModalCalendar = document.getElementById("welcome-modal-calendar");
 
 const MODAL_CONTENT = {
   yes: {
     title: "Kiitos ilmoittautumisesta!",
     lede:  "Ihana, että pääset juhlimaan kanssamme.",
-    text:  "Liity vielä juhlien WhatsApp-ryhmään, niin pysyt mukana viestien ja kuvien tahdissa.",
+    text:  "Liity vielä juhlien WhatsApp-ryhmään ja merkkaa päivä kalenteriin, niin se ei pääse unohtumaan.",
     waTitle: "Tule WhatsApp-ryhmään",
-    waSub:   "Kuvia, kuulumisia ja viestejä juhlista"
+    waSub:   "Kuvia, kuulumisia ja viestejä juhlista",
+    showCalendar: true
   },
   maybe: {
     title: "Kiitos vastauksesta!",
     lede:  "Toivottavasti pääset paikalle.",
-    text:  "Voit päivittää tiedot myöhemmin samasta lomakkeesta tai ilmoittautuneiden listalta. Liity ihmeessä jo WhatsApp-ryhmään, niin pysyt mukana kuulumisissa.",
+    text:  "Voit päivittää tiedot myöhemmin samasta lomakkeesta. Liity ihmeessä WhatsApp-ryhmään ja merkkaa päivä kalenteriin varmuuden vuoksi.",
     waTitle: "Tule WhatsApp-ryhmään",
-    waSub:   "Kuulumisia ja kuvia juhlapäivän tunnelmista"
+    waSub:   "Kuulumisia ja kuvia juhlapäivän tunnelmista",
+    showCalendar: true
   },
   no: {
     title: "Harmi, että et pääse",
     lede:  "Kiitos, että kerroit. Jäämme kaipaamaan sinua.",
     text:  "Voit silti liittyä WhatsApp-ryhmään, jos haluat nähdä juhlista kuvia ja kuulumisia.",
     waTitle: "Liity WhatsApp-ryhmään",
-    waSub:   "Näe kuvat ja kuulumiset juhlista jälkikäteen"
+    waSub:   "Näe kuvat ja kuulumiset juhlista jälkikäteen",
+    showCalendar: false
   }
 };
 
@@ -835,6 +843,7 @@ function showWelcomeModal(attending) {
   if (welcomeModalText)    welcomeModalText.textContent = c.text;
   if (welcomeModalWaTitle) welcomeModalWaTitle.textContent = c.waTitle;
   if (welcomeModalWaSub)   welcomeModalWaSub.textContent = c.waSub;
+  if (welcomeModalCalendar) welcomeModalCalendar.classList.toggle("hidden", !c.showCalendar);
 
   welcomeModal.classList.remove("hidden");
   // Pieni viive jotta CSS-transition käynnistyy.
