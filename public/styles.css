@@ -302,6 +302,29 @@ textarea { resize: vertical; font-family: var(--font-body); }
   font-style: italic;
 }
 
+/* =====  Photos  ===== */
+
+.intro-photo,
+.program-photo {
+  margin: 2.5rem auto 0;
+  max-width: 540px;
+  text-align: center;
+}
+
+.intro-photo img,
+.program-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--c-line);
+}
+
+.program-photo {
+  margin-top: 1.75rem;
+}
+
 /* =====  Program cards  ===== */
 
 .program-card {
