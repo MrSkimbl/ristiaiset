@@ -27,7 +27,8 @@ Yksityinen staattinen juhlasivusto, jossa kutsutut voivat kirjautua yksinkertais
 │   ├── styles.css        # tyyli (dusty rose + cream + plum)
 │   ├── app.js            # kirjautuminen, ilmoittautuminen, lista, arvaus
 │   ├── favicon.svg       # sivuston ikoni (mustikka)
-│   └── firebase-config.js # web-SDK config (julkiset avaimet)
+│   ├── firebase-config.js # web-SDK config (julkiset avaimet)
+│   └── img/              # sivun valokuvat (vauva.jpg, lapset.jpg)
 ├── scripts/
 │   └── sync-names.mjs    # synkkaa PEOPLE → firestore.rules
 └── README.md
@@ -150,6 +151,8 @@ Jos skipppaat vaiheen 2, uusi vieras näkyy UI:ssa mutta Firestore hylkää hän
 ### Vaihda kuva
 
 Hero-kuva on CSS-taustakuva: `public/styles.css` → `.hero { background: url('...'); }`. Vaihda URL tai lataa kuva `public/`-kansioon ja viittaa suhteellisesti (`url('oma-kuva.jpg')`).
+
+Sisältökuvat ovat `public/img/`-kansiossa ja viitataan `index.html`:ssä `<figure class="intro-photo">` (vauva, intro-osio) ja `<figure class="program-photo">` (lapset, Kesäjuhlat-kortin alla). Tyylit `.intro-photo` / `.program-photo` löytyvät `styles.css`:n "Photos"-osiosta. Vaihto: korvaa tiedosto `public/img/`:ssä samalla nimellä tai päivitä `src`.
 
 ---
 
