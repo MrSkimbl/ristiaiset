@@ -15,13 +15,13 @@ service cloud.firestore {
         'Jukka Ohtonen', 'Kerttu Valkonen', 'Kimmo Louhelainen', 'Leena Airaksinen',
         'Maija Kurki', 'Maire Luoto', 'Mari Moisio', 'Martti Louhelainen',
         'Matti Luoto', 'Meme Kutuk', 'Miisa Jaakonvaara', 'Mikko Luoto',
-        'Mila Kutuk', 'Milla Nevanpää', 'Mustikka Louhelainen', 'Neela Ax',
-        'Nelli Nevanpää', 'Oiva Ax', 'Oliver Brouk', 'Olivia Brouk',
-        'Olli Patrakka', 'Olli-Pekka Höynälä', 'Onni Korhonen', 'Pekka Luoto',
-        'Petra Salonen', 'Pia Ax', 'Päivi Karvala', 'Sanna Ax',
-        'Seppo Tähkiö', 'Tero Airaksinen', 'Timi Airaksinen', 'Tomi Brouk',
-        'Tuomo Janatuinen', 'Tuukka Airaksinen', 'Vesa Luoto', 'Viola Brouk',
-        'Vivian Wilen', 'William Wilen'
+        'Mikko Matikka', 'Mila Kutuk', 'Milla Nevanpää', 'Mustikka Louhelainen',
+        'Neela Ax', 'Nelli Nevanpää', 'Oiva Ax', 'Oliver Brouk',
+        'Olivia Brouk', 'Olli Patrakka', 'Olli-Pekka Höynälä', 'Onni Korhonen',
+        'Pekka Luoto', 'Petra Salonen', 'Pia Ax', 'Päivi Karvala',
+        'Sanna Ax', 'Seppo Tähkiö', 'Tero Airaksinen', 'Timi Airaksinen',
+        'Tomi Brouk', 'Tuomo Janatuinen', 'Tuukka Airaksinen', 'Vesa Luoto',
+        'Viola Brouk', 'Vivian Wilen', 'William Wilen'
       ];
     }
 

@@ -41,7 +41,7 @@ Yksityinen staattinen juhlasivusto, jossa kutsutut voivat kirjautua yksinkertais
 Seuraa näitä kun teet muutoksia — nämä on sovittu käyttäjän (Kimmo) kanssa:
 
 1. **Kieli:** kaikki UI-teksti on suomea.
-2. **Autentikointi:** ei Firebase Authia, ei UI-tason salasanaa. Kirjautuminen = valitse nimesi dropdownista. Pääsynhallinta tapahtuu Firestore-säännöissä (whitelist 66 nimelle) ja sen turvana, että URL jaetaan vain kutsutuille.
+2. **Autentikointi:** ei Firebase Authia, ei UI-tason salasanaa. Kirjautuminen = valitse nimesi dropdownista. Pääsynhallinta tapahtuu Firestore-säännöissä (whitelist 67 nimelle) ja sen turvana, että URL jaetaan vain kutsutuille.
 3. **Vieraat rakenteessa `PEOPLE`** (`app.js`): yksi flat-lista, jossa jokaisella kentät `{ name, cat, group, role? }`.
    - `cat: 3` = aikuinen, `cat: 2` = lapsi, `cat: 1` = pieni lapsi (ei kirjaudu itse).
    - `cat >= 2` näkyy login-dropdownissa; kaikilla kirjautuvilla samat oikeudet (login, RSVP, nimiarvaus).
@@ -61,7 +61,7 @@ Seuraa näitä kun teet muutoksia — nämä on sovittu käyttäjän (Kimmo) kan
    - Muiden arvaukset näkyvät kuplina lomakkeen alla.
 6. **Audit-loki** (`audit`-kokoelma): jokainen RSVP- ja guess-kirjoitus tallennetaan myös tänne. Append-only sääntöjen tasolla — clientti ei voi lukea, muokata eikä poistaa. Käytetään historian palauttamiseen jos joku alkaa spämmätä tai pyyhkiä vastauksia.
 7. **Tervetuloa-modaali:** ilmoittautumisen jälkeen avautuu pop-up, jonka sisältö vaihtelee vastauksen mukaan (`yes` / `maybe` / `no`). Sisältää WhatsApp-ryhmän linkin ja `yes`/`maybe`-vastauksissa myös kalenterikutsunappulat (Google Kalenteri + .ics Outlookiin/Appleen/muuhun).
-8. **Firestore-säännöt**: dokumentin ID:n oltava yksi 66 whitelistatusta nimestä (`allowedName` `firestore.rules`:ssä). Sisällön muoto validoidaan (`rsvps` + `guesses`). `audit` on create-only. Muita kokoelmia ei sallita.
+8. **Firestore-säännöt**: dokumentin ID:n oltava yksi 67 whitelistatusta nimestä (`allowedName` `firestore.rules`:ssä). Sisällön muoto validoidaan (`rsvps` + `guesses`). `audit` on create-only. Muita kokoelmia ei sallita.
 9. **Kuohun osoite:** Joensuunmutka 40, 41930 Kuohu.
 10. **Kirkko:** Petäjäveden vanha kirkko, Vanhankirkontie 9, 41900 Petäjävesi, klo 14.
 11. **Muistaminen-osio:** tilinumerot oikeissa muodoissaan (Jami, Ellen, Iivo, Mustikka/Heidin tili). Päivitettävissä `index.html`:n `.accounts`-blokista.
@@ -160,7 +160,7 @@ Sisältökuvat ovat `public/img/`-kansiossa ja viitataan `index.html`:ssä `<fig
 
 - Kyseessä on yksityinen perhesivusto. Ei salasanaa eikä autentikointia — URL on se jakoavain.
 - **Firestore-säännöt** (`firestore.rules`) rajoittavat asiakaskirjoitukset:
-  - Dokumentin ID:n on oltava yksi 66 whitelistatusta nimestä (`allowedName`-funktio).
+  - Dokumentin ID:n on oltava yksi 67 whitelistatusta nimestä (`allowedName`-funktio).
   - `request.resource.data.name` on vastattava doc-ID:tä (estää spoofingin).
   - `attending ∈ {yes, maybe, no}`, `notes < 500`, `guess < 100` merkkiä.
   - `audit`-kokoelma: vain create. Ei luku-, muokkaus- eikä poisto-oikeutta clientille.
@@ -177,7 +177,7 @@ Sisältökuvat ovat `public/img/`-kansiossa ja viitataan `index.html`:ssä `<fig
 - ✅ Firestore aktivoitu (EU-multi-region `eur3`)
 - ✅ Hosting + rules deployattu
 - ✅ Tilinumerot oikeat (Jami, Ellen, Iivo, Mustikka/Heidin tili)
-- ✅ **Kutsulista (`PEOPLE`)** täytetty CSV:n mukaan (66 henkilöä, 21 perheryhmää)
+- ✅ **Kutsulista (`PEOPLE`)** täytetty CSV:n mukaan (67 henkilöä, 22 perheryhmää)
 - ✅ Audit-loki + WhatsApp- ja kalenterilinkit ilmoittautumismodaalissa
 
 ---

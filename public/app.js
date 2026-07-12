@@ -58,6 +58,7 @@ const PEOPLE = [
   { name: "Meme Kutuk",            cat: 3, group: 18 },
   { name: "Miisa Jaakonvaara",     cat: 2, group: 13 },
   { name: "Mikko Luoto",           cat: 3, group: 3,  role: "Eno", gen: "Mikon" },
+  { name: "Mikko Matikka",         cat: 3, group: 21 },
   { name: "Mila Kutuk",            cat: 2, group: 18, role: "Pikkuserkku" },
   { name: "Milla Nevanpää",        cat: 2, group: 14 },
   { name: "Mustikka Louhelainen",  cat: 1, group: 0,  role: "Päätähti", gen: "Mustikan" },
